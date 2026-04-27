@@ -7,13 +7,1378 @@
     <meta name="description" content="Advanced Lua engineering platform for the Roblox ecosystem.">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+/* ========================================
+   SYNTAX OVERRIDE - Cyberpunk Theme
+   ======================================== */
+
+:root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #0f0f1a;
+    --bg-card: #12121f;
+    --bg-card-hover: #1a1a2e;
+    --neon-green: #00ff41;
+    --neon-yellow: #e8ff00;
+    --neon-cyan: #00e5ff;
+    --neon-red: #ff0040;
+    --neon-purple: #b400ff;
+    --neon-orange: #ff6600;
+    --text-primary: #e0e0e0;
+    --text-secondary: #888;
+    --text-muted: #555;
+    --border: #1a1a2e;
+    --border-glow: #00ff4130;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Orbitron', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+::selection {
+    background: var(--neon-green);
+    color: var(--bg-primary);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--neon-green); border-radius: 3px; }
+
+/* Matrix Rain */
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.06;
+    pointer-events: none;
+}
+
+/* ========================================
+   NAVBAR
+   ======================================== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 60px;
+    background: rgba(10, 10, 15, 0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.brand-icon {
+    font-size: 1.4rem;
+    filter: drop-shadow(0 0 8px var(--neon-yellow));
+}
+
+.brand-text {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--neon-green);
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--neon-green);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.nav-link {
+    padding: 0.5rem 0.75rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.nav-link:hover {
+    color: var(--neon-green);
+    background: rgba(0, 255, 65, 0.08);
+    text-shadow: 0 0 8px var(--neon-green);
+}
+
+.nav-link.active {
+    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green);
+}
+
+.discord-btn {
+    color: var(--neon-yellow) !important;
+    border: 1px solid var(--neon-yellow);
+    text-shadow: 0 0 8px var(--neon-yellow);
+    box-shadow: 0 0 10px rgba(232, 255, 0, 0.15);
+}
+
+.discord-btn:hover {
+    background: rgba(232, 255, 0, 0.15) !important;
+    color: var(--neon-yellow) !important;
+    box-shadow: 0 0 20px rgba(232, 255, 0, 0.3);
+}
+
+.cmd-btn {
+    padding: 0.4rem 0.75rem;
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.cmd-btn:hover {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    box-shadow: 0 0 10px var(--border-glow);
+}
+
+/* Hamburger */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.hamburger span {
+    width: 24px;
+    height: 2px;
+    background: var(--neon-green);
+    transition: all 0.3s ease;
+}
+
+/* ========================================
+   COMMAND PALETTE
+   ======================================== */
+.command-palette {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2000;
+}
+
+.command-palette.open { display: block; }
+
+.cmd-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.cmd-modal {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--neon-green);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
+    overflow: hidden;
+}
+
+.cmd-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.cmd-input {
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    color: var(--neon-green);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.cmd-input::placeholder { color: var(--text-muted); }
+
+.cmd-results {
+    max-height: 300px;
+    overflow-y: auto;
+    border-top: 1px solid var(--border);
+}
+
+.cmd-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.cmd-item:hover {
+    background: rgba(0, 255, 65, 0.08);
+    color: var(--neon-green);
+}
+
+.cmd-item-icon { font-size: 1rem; }
+
+/* ========================================
+   STATUS BAR
+   ======================================== */
+.status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 0 1.5rem;
+    height: 32px;
+    background: rgba(10, 10, 15, 0.95);
+    border-top: 1px solid var(--border);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    backdrop-filter: blur(10px);
+}
+
+.status-item { display: flex; gap: 0.4rem; }
+.status-label { color: var(--text-muted); }
+.status-value { color: var(--neon-green); }
+.status-item.version { margin-left: auto; }
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+#app {
+    position: relative;
+    z-index: 1;
+    margin-top: 60px;
+    margin-bottom: 32px;
+    min-height: calc(100vh - 92px);
+}
+
+/* ========================================
+   HOME PAGE
+   ======================================== */
+.home-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 92px);
+    padding: 2rem;
+    gap: 2rem;
+    align-items: center;
+}
+
+.code-editor {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.05);
+}
+
+.editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--border);
+}
+
+.editor-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.editor-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot-red { background: #ff5f57; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green { background: #28c840; }
+
+.editor-title {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.editor-badge {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(0, 255, 65, 0.15);
+    color: var(--neon-green);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.editor-code {
+    padding: 1.5rem;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    overflow-x: auto;
+}
+
+.code-line {
+    display: flex;
+    gap: 1rem;
+}
+
+.line-num {
+    color: var(--text-muted);
+    min-width: 2ch;
+    text-align: right;
+    user-select: none;
+}
+
+.code-content { flex: 1; }
+
+/* Syntax colors */
+.kw { color: #ff79c6; }
+.fn { color: #50fa7b; }
+.str { color: #f1fa8c; }
+.cm { color: #6272a4; }
+.op { color: #ff79c6; }
+.var { color: #8be9fd; }
+.num { color: #bd93f9; }
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+}
+
+.hero-label {
+    font-size: 0.7rem;
+    color: var(--neon-green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+.hero-desc {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    max-width: 500px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    padding: 0.8rem 1.5rem;
+    background: var(--neon-green);
+    color: var(--bg-primary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: none;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    padding: 0.8rem 1.5rem;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    box-shadow: 0 0 15px var(--border-glow);
+}
+
+.hero-shortcut {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* Metrics Section */
+.metrics-section {
+    padding: 4rem 2rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.metric-card {
+    background: var(--bg-card);
+    border: 1px dashed var(--neon-yellow);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 20px var(--border-glow);
+    transform: translateY(-3px);
+}
+
+.metric-value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--neon-green);
+    text-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+.metric-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Execution Protocol */
+.protocol-section {
+    padding: 4rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--neon-green);
+    margin-bottom: 2rem;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.protocol-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.protocol-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.protocol-step:hover {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px var(--border-glow);
+}
+
+.step-num {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--neon-yellow);
+    min-width: 40px;
+}
+
+.step-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--neon-green);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.step-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ========================================
+   LIBRARY PAGE
+   ======================================== */
+.page-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--neon-green);
+    letter-spacing: 3px;
+    text-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+.page-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.search-bar {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--neon-green);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    border-radius: 4px;
+    outline: none;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+}
+
+.search-bar:focus {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px var(--border-glow);
+}
+
+.search-bar::placeholder { color: var(--text-muted); }
+
+.filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    background: rgba(0, 255, 65, 0.08);
+}
+
+.scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.script-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.script-card:hover {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 20px var(--border-glow);
+    transform: translateY(-3px);
+}
+
+.script-card-header {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+}
+
+.script-status {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.status-active { background: rgba(0, 255, 65, 0.15); color: var(--neon-green); border: 1px solid rgba(0, 255, 65, 0.3); }
+.status-testing { background: rgba(232, 255, 0, 0.15); color: var(--neon-yellow); border: 1px solid rgba(232, 255, 0, 0.3); }
+.status-patched { background: rgba(255, 0, 64, 0.15); color: var(--neon-red); border: 1px solid rgba(255, 0, 64, 0.3); }
+
+.script-game-tag {
+    font-size: 0.65rem;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.script-card-body { padding: 1.25rem; }
+
+.script-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.script-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.script-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.meta-badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.risk-low { background: rgba(0, 255, 65, 0.1); color: var(--neon-green); }
+.risk-medium { background: rgba(232, 255, 0, 0.1); color: var(--neon-yellow); }
+.risk-high { background: rgba(255, 0, 64, 0.1); color: var(--neon-red); }
+
+.badge-keyless { background: rgba(0, 229, 255, 0.1); color: var(--neon-cyan); }
+.badge-key { background: rgba(180, 0, 255, 0.1); color: var(--neon-purple); }
+.badge-universal { background: rgba(255, 102, 0, 0.1); color: var(--neon-orange); }
+
+.script-card-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.script-version {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.view-code-btn {
+    padding: 0.4rem 1rem;
+    background: transparent;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.view-code-btn:hover {
+    background: rgba(0, 255, 65, 0.15);
+    box-shadow: 0 0 15px var(--border-glow);
+}
+
+/* ========================================
+   SCRIPT DETAIL VIEW
+   ======================================== */
+.script-detail {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+.detail-code-block {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.detail-code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--border);
+}
+
+.copy-btn {
+    padding: 0.4rem 1rem;
+    background: var(--neon-green);
+    color: var(--bg-primary);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover { box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); }
+
+.copy-btn.copied {
+    background: var(--neon-cyan);
+}
+
+.detail-code-content {
+    padding: 1.5rem;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    color: var(--text-primary);
+}
+
+.detail-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.detail-meta-item {
+    padding: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.detail-meta-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.4rem;
+}
+
+.detail-meta-value {
+    font-size: 0.85rem;
+    color: var(--neon-green);
+    font-weight: 600;
+}
+
+/* ========================================
+   TERMINAL PAGE
+   ======================================== */
+.terminal-input-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.terminal-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    border-radius: 4px;
+    outline: none;
+}
+
+.terminal-input::placeholder { color: rgba(0, 255, 65, 0.3); }
+
+.terminal-enter-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--neon-green);
+    color: var(--bg-primary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.terminal-enter-btn:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+}
+
+.terminal-file-header {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px 6px 0 0;
+    margin-bottom: 0;
+    letter-spacing: 1px;
+}
+
+.terminal-list {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
+}
+
+.terminal-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.terminal-item:last-child { border-bottom: none; }
+
+.terminal-item:hover {
+    background: rgba(0, 255, 65, 0.05);
+}
+
+.terminal-line-num {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    min-width: 25px;
+}
+
+.terminal-item-title {
+    font-size: 0.85rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.terminal-item-meta {
+    display: flex;
+    gap: 0.75rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.terminal-tag {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Legend */
+.terminal-legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-muted);
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.legend-dot.working { background: var(--neon-green); }
+.legend-dot.patched { background: var(--neon-red); }
+.legend-dot.testing { background: var(--neon-yellow); }
+
+/* ========================================
+   CHANGELOG PAGE
+   ======================================== */
+.changelog-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.changelog-timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+}
+
+.changelog-entry {
+    position: relative;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.changelog-entry:hover {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+}
+
+.changelog-entry::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 1.75rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    border: 2px solid var(--bg-primary);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+.changelog-date {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.changelog-type {
+    display: inline-block;
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(0, 229, 255, 0.15);
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+}
+
+.changelog-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.changelog-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ========================================
+   RULES PAGE
+   ======================================== */
+.rules-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.rule-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.rule-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rule-header:hover { background: rgba(0, 255, 65, 0.03); }
+
+.rule-num-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.rule-num {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 24px;
+}
+
+.rule-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rule-arrow {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+}
+
+.rule-item.open .rule-arrow { transform: rotate(180deg); }
+
+.rule-content {
+    display: none;
+    padding: 0 1.25rem 1.25rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.rule-item.open .rule-content { display: block; }
+
+.rule-severity-red .rule-num { color: var(--neon-red); }
+.rule-severity-red .rule-title { color: var(--neon-red); }
+.rule-severity-yellow .rule-num { color: var(--neon-yellow); }
+.rule-severity-yellow .rule-title { color: var(--neon-yellow); }
+.rule-severity-cyan .rule-num { color: var(--neon-cyan); }
+.rule-severity-cyan .rule-title { color: var(--neon-cyan); }
+.rule-severity-green .rule-num { color: var(--neon-green); }
+.rule-severity-green .rule-title { color: var(--neon-green); }
+.rule-severity-purple .rule-num { color: var(--neon-purple); }
+.rule-severity-purple .rule-title { color: var(--neon-purple); }
+.rule-severity-orange .rule-num { color: var(--neon-orange); }
+.rule-severity-orange .rule-title { color: var(--neon-orange); }
+
+/* ========================================
+   ABOUT PAGE
+   ======================================== */
+.about-section {
+    margin-bottom: 3rem;
+}
+
+.about-intro {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    max-width: 700px;
+}
+
+.about-subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--neon-cyan);
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+}
+
+.about-mission {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border-left: 3px solid var(--neon-green);
+    border-radius: 0 8px 8px 0;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.feature-card {
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px var(--border-glow);
+    transform: translateY(-2px);
+}
+
+.feature-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+.feature-title { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+.feature-desc { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6; }
+
+.team-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    max-width: 500px;
+}
+
+.team-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--bg-primary);
+    flex-shrink: 0;
+}
+
+.team-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--neon-green);
+}
+
+.team-role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.team-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+
+.discord-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #5865F2, #7289DA);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.discord-cta:hover {
+    box-shadow: 0 0 25px rgba(88, 101, 242, 0.4);
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.footer {
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+}
+
+.footer a {
+    color: var(--neon-green);
+    text-decoration: none;
+}
+
+.footer a:hover { text-decoration: underline; }
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 900px) {
+    .home-hero {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+    }
+    
+    .hero-title { font-size: 2rem; }
+    
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    
+    .scripts-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .hamburger { display: flex; }
+    
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(10, 10, 15, 0.98);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem;
+        gap: 0.25rem;
+    }
+    
+    .nav-links.open { display: flex; }
+    
+    .nav-link {
+        padding: 0.75rem 1rem;
+        width: 100%;
+    }
+    
+    .status-bar {
+        gap: 0.75rem;
+        font-size: 0.55rem;
+        padding: 0 0.75rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+    
+    .page-container { padding: 1.5rem; }
+    
+    .hero-title { font-size: 1.75rem; }
+    
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    
+    .detail-meta-grid { grid-template-columns: 1fr 1fr; }
+    
+    .features-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    .metrics-grid { grid-template-columns: 1fr; }
+    
+    .hero-buttons { flex-direction: column; }
+    
+    .terminal-input-bar { flex-direction: column; }
+    
+    .script-meta { gap: 0.5rem; }
+}
+
+    </style>
 </head>
 <body>
-    <!-- Matrix Rain Canvas -->
     <canvas id="matrix-canvas"></canvas>
-
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-brand" onclick="navigate('home')">
             <span class="brand-icon">⚡</span>
@@ -32,8 +1397,6 @@
             <button class="cmd-btn" onclick="toggleCommandPalette()">[CMD]</button>
         </div>
     </nav>
-
-    <!-- Command Palette -->
     <div class="command-palette" id="commandPalette">
         <div class="cmd-overlay" onclick="toggleCommandPalette()"></div>
         <div class="cmd-modal">
@@ -45,19 +1408,1243 @@
             <div class="cmd-results" id="cmdResults"></div>
         </div>
     </div>
-
-    <!-- Status Bar -->
     <div class="status-bar">
         <div class="status-item"><span class="status-label">SCRIPTS_ACTIVE:</span> <span class="status-value" id="scriptCount">1,402</span></div>
         <div class="status-item"><span class="status-label">SYSTEM_LATENCY:</span> <span class="status-value" id="latencyValue">12ms</span></div>
         <div class="status-item"><span class="status-label">GLOBAL_INJECTIONS:</span> <span class="status-value">822k</span></div>
         <div class="status-item version">COMMAND CENTER V4.2.1</div>
     </div>
-
-    <!-- Main Content -->
     <main id="app"></main>
+    <script>
+// ========================================
+// SYNTAX OVERRIDE - Script Data
+// ========================================
 
-    <script src="js/data.js"></script>
-    <script src="js/app.js"></script>
+const SCRIPTS = [
+    {
+        id: 1,
+        title: "Xeno Delta Hub | 180+ Features",
+        game: "Universal",
+        description: "Multi-game script hub with 180+ stacking features. Supports all popular Roblox games.",
+        keyType: "keyless",
+        riskLevel: "medium",
+        version: "2.0.0",
+        status: "active",
+        category: "library",
+        views: 342,
+        code: `-- Xeno Delta Hub | 180+ Features
+-- Universal Script Hub
+-- Version 2.0.0
+
+local XenoDelta = {}
+XenoDelta.__index = XenoDelta
+
+function XenoDelta.init()
+    local self = setmetatable({}, XenoDelta)
+    self.version = "2.0.0"
+    self.features = 180
+    self.games_supported = "Universal"
+    
+    print("[XENO DELTA] Initializing Hub...")
+    print("[XENO DELTA] Loading " .. self.features .. " features...")
+    
+    self:loadModules()
+    return self
+end
+
+function XenoDelta:loadModules()
+    local modules = {
+        "ESP", "Aimbot", "Speed", "Fly",
+        "Noclip", "Teleport", "AutoFarm",
+        "InfiniteJump", "Godmode", "Reach"
+    }
+    
+    for i, mod in ipairs(modules) do
+        print("[MODULE] Loading: " .. mod)
+        task.wait(0.1)
+    end
+    
+    print("[XENO DELTA] All modules loaded successfully!")
+end
+
+XenoDelta.init()`
+    },
+    {
+        id: 2,
+        title: "Magnus AI Chatbot",
+        game: "Universal",
+        description: "AI-powered chatbot script for in-game conversations. Smart responses with natural language processing.",
+        keyType: "key",
+        riskLevel: "low",
+        version: "1.3.0",
+        status: "active",
+        category: "library",
+        views: 128,
+        code: `-- Magnus AI Chatbot
+-- Version 1.3.0
+-- Requires Key
+
+local Magnus = {}
+Magnus.version = "1.3.0"
+Magnus.responses = {}
+
+function Magnus:init()
+    print("[MAGNUS] AI Chatbot initializing...")
+    self:loadResponses()
+    self:startListener()
+end
+
+function Magnus:loadResponses()
+    self.responses = {
+        greeting = {"Hello!", "Hey there!", "What's up?"},
+        farewell = {"Goodbye!", "See ya!", "Later!"},
+        help = {"How can I help?", "What do you need?"}
+    }
+    print("[MAGNUS] Response database loaded")
+end
+
+function Magnus:startListener()
+    print("[MAGNUS] Chat listener active")
+    -- Listens for chat messages
+end
+
+Magnus:init()`
+    },
+    {
+        id: 3,
+        title: "Blox Fruits Auto Farm",
+        game: "Blox Fruits",
+        description: "Automated farming script for Blox Fruits. Auto-quest, auto-attack, and fruit collection.",
+        keyType: "keyless",
+        riskLevel: "medium",
+        version: "3.1.0",
+        status: "active",
+        category: "library",
+        views: 567,
+        code: `-- Blox Fruits Auto Farm
+-- Version 3.1.0
+-- Keyless
+
+local AutoFarm = {
+    active = false,
+    target = nil,
+    quest = nil
+}
+
+function AutoFarm:start()
+    self.active = true
+    print("[AUTOFARM] Starting Blox Fruits farm...")
+    
+    self:findQuest()
+    self:beginLoop()
+end
+
+function AutoFarm:findQuest()
+    print("[AUTOFARM] Searching for nearest quest...")
+    -- Quest detection logic
+    self.quest = "Active Quest Found"
+    print("[AUTOFARM] Quest: " .. self.quest)
+end
+
+function AutoFarm:beginLoop()
+    while self.active do
+        self:findTarget()
+        self:attack()
+        task.wait(0.5)
+    end
+end
+
+function AutoFarm:findTarget()
+    -- Target finding logic
+end
+
+function AutoFarm:attack()
+    -- Attack logic
+end
+
+AutoFarm:start()`
+    },
+    {
+        id: 4,
+        title: "Deadly Auto Farm",
+        game: "Deadly Delivery",
+        description: "Auto farm script for Deadly Delivery. Automatic deliveries and resource collection.",
+        keyType: "key",
+        riskLevel: "high",
+        version: "1.0.0",
+        status: "active",
+        category: "library",
+        views: 89,
+        code: `-- Deadly Auto Farm
+-- Deadly Delivery
+-- Version 1.0.0
+-- Key Required
+
+local DeadlyFarm = {}
+DeadlyFarm.__index = DeadlyFarm
+
+function DeadlyFarm.new()
+    local self = setmetatable({}, DeadlyFarm)
+    self.running = false
+    self.deliveries = 0
+    return self
+end
+
+function DeadlyFarm:start()
+    self.running = true
+    print("[DEADLY] Auto Farm started!")
+    
+    while self.running do
+        self:deliver()
+        self.deliveries = self.deliveries + 1
+        print("[DEADLY] Deliveries: " .. self.deliveries)
+        task.wait(1)
+    end
+end
+
+function DeadlyFarm:deliver()
+    -- Delivery automation logic
+end
+
+local farm = DeadlyFarm.new()
+farm:start()`
+    },
+    {
+        id: 5,
+        title: "Forge Hub | 15+ Games",
+        game: "Universal",
+        description: "Multi-game script hub supporting 15+ popular Roblox games with modular features.",
+        keyType: "key",
+        riskLevel: "medium",
+        version: "1.2.0",
+        status: "active",
+        category: "library",
+        views: 203,
+        code: `-- Forge Hub | 15+ Games
+-- Version 1.2.0
+-- Key Required
+
+local ForgeHub = {
+    version = "1.2.0",
+    games = {},
+    loaded = false
+}
+
+function ForgeHub:init()
+    print("[FORGE HUB] Loading v" .. self.version)
+    self:loadGames()
+    self.loaded = true
+    print("[FORGE HUB] Ready! " .. #self.games .. " games supported")
+end
+
+function ForgeHub:loadGames()
+    self.games = {
+        "Blox Fruits", "King Legacy",
+        "Pet Simulator X", "Anime Adventures",
+        "Tower Defense Simulator", "Brookhaven",
+        "Murder Mystery 2", "Arsenal",
+        "Jailbreak", "Adopt Me",
+        "Shindo Life", "YBA",
+        "AUT", "GPO", "Bedwars"
+    }
+end
+
+ForgeHub:init()`
+    },
+    {
+        id: 6,
+        title: "Fling All Beta",
+        game: "Universal",
+        description: "Universal fling script. Flings all players in the server. Use responsibly.",
+        keyType: "keyless",
+        riskLevel: "high",
+        version: "0.9.0",
+        status: "active",
+        category: "library",
+        views: 445,
+        code: `-- Fling All Beta
+-- Universal
+-- Version 0.9.0
+
+local Fling = {
+    power = 500,
+    active = false,
+    targets = {}
+}
+
+function Fling:start()
+    self.active = true
+    print("[FLING] Fling All activated!")
+    print("[FLING] Power: " .. self.power)
+    
+    self:getTargets()
+    self:execute()
+end
+
+function Fling:getTargets()
+    -- Gets all players in server
+    print("[FLING] Scanning for players...")
+end
+
+function Fling:execute()
+    for _, target in ipairs(self.targets) do
+        -- Fling logic
+    end
+    print("[FLING] Execution complete!")
+end
+
+Fling:start()`
+    },
+    {
+        id: 7,
+        title: "Universal Auto Farm",
+        game: "Universal",
+        description: "Works across multiple games. Auto-detects game and applies appropriate farming logic.",
+        keyType: "keyless",
+        riskLevel: "medium",
+        version: "2.1.0",
+        status: "active",
+        category: "terminal",
+        views: 231,
+        code: `-- Universal Auto Farm
+-- Version 2.1.0
+
+local UAF = {}
+UAF.version = "2.1.0"
+
+function UAF:detect()
+    local gameId = game.PlaceId
+    print("[UAF] Detecting game: " .. gameId)
+    return gameId
+end
+
+function UAF:start()
+    local id = self:detect()
+    print("[UAF] Auto Farm started for game " .. id)
+end
+
+UAF:start()`
+    },
+    {
+        id: 8,
+        title: "Da Hood Aimbot",
+        game: "Da Hood",
+        description: "Precision aimbot for Da Hood. Auto-aim with customizable FOV and smoothing.",
+        keyType: "keyless",
+        riskLevel: "high",
+        version: "3.0.0",
+        status: "active",
+        category: "terminal",
+        views: 389,
+        code: `-- Da Hood Aimbot
+-- Version 3.0.0
+
+local Aimbot = {
+    fov = 120,
+    smoothing = 0.5,
+    active = false
+}
+
+function Aimbot:toggle()
+    self.active = not self.active
+    print("[AIMBOT] " .. (self.active and "ON" or "OFF"))
+end
+
+Aimbot:toggle()`
+    },
+    {
+        id: 9,
+        title: "Blox Fruits Devil Fruit ESP",
+        game: "Blox Fruits",
+        description: "ESP for devil fruits in Blox Fruits. Highlights fruit locations on the map.",
+        keyType: "keyless",
+        riskLevel: "low",
+        version: "1.4.0",
+        status: "active",
+        category: "terminal",
+        views: 276,
+        code: `-- Blox Fruits Devil Fruit ESP
+-- Version 1.4.0
+
+local FruitESP = {
+    enabled = true,
+    range = 5000
+}
+
+function FruitESP:scan()
+    print("[ESP] Scanning for Devil Fruits...")
+    print("[ESP] Range: " .. self.range)
+end
+
+FruitESP:scan()`
+    },
+    {
+        id: 10,
+        title: "Prison Life Escape Bot",
+        game: "Prison Life",
+        description: "Automated escape bot for Prison Life. Handles keycard, guns, and escape routes.",
+        keyType: "keyless",
+        riskLevel: "low",
+        version: "1.1.0",
+        status: "active",
+        category: "terminal",
+        views: 154,
+        code: `-- Prison Life Escape Bot
+-- Version 1.1.0
+
+local EscapeBot = {
+    phase = "planning",
+    inventory = {}
+}
+
+function EscapeBot:start()
+    print("[ESCAPE] Planning escape...")
+    self.phase = "executing"
+    print("[ESCAPE] Escape in progress!")
+end
+
+EscapeBot:start()`
+    },
+    {
+        id: 11,
+        title: "Speed Hack Module",
+        game: "Universal",
+        description: "Universal speed modification module. Adjustable walk and fly speed.",
+        keyType: "keyless",
+        riskLevel: "medium",
+        version: "2.0.0",
+        status: "testing",
+        category: "terminal",
+        views: 198,
+        code: `-- Speed Hack Module
+-- Version 2.0.0
+
+local SpeedHack = {
+    walkSpeed = 50,
+    flySpeed = 100,
+    active = false
+}
+
+function SpeedHack:apply()
+    self.active = true
+    print("[SPEED] Walk: " .. self.walkSpeed)
+    print("[SPEED] Fly: " .. self.flySpeed)
+end
+
+SpeedHack:apply()`
+    }
+];
+
+const CHANGELOG = [
+    {
+        date: "2026-04-27",
+        type: "launch",
+        title: "Platform Launch",
+        description: "Syntax Override officially launched. Script library, terminal, changelog, and rules pages are live."
+    },
+    {
+        date: "2026-04-27",
+        type: "feature",
+        title: "Interactive Terminal Added",
+        description: "New terminal page with Lua command input and script execution preview."
+    },
+    {
+        date: "2026-04-27",
+        type: "feature",
+        title: "Library Search & Filters",
+        description: "Added real-time search and filter system to the script library. Filter by keyless, key, or universal."
+    },
+    {
+        date: "2026-04-27",
+        type: "feature",
+        title: "Script Upload System",
+        description: "Users can now submit scripts for review. Admin approval required before publishing."
+    },
+    {
+        date: "2026-04-27",
+        type: "feature",
+        title: "Copy Code Button",
+        description: "One-click copy to clipboard on all script detail pages."
+    },
+    {
+        date: "2026-04-27",
+        type: "update",
+        title: "Rules & Community Guidelines",
+        description: "Comprehensive community rules added covering spam, NSFW, reposting, key systems, and more."
+    },
+    {
+        date: "2026-04-27",
+        type: "update",
+        title: "UI Overhaul — Cyberpunk Theme",
+        description: "Complete visual redesign with dark cyberpunk aesthetic, neon accents, matrix rain, and terminal styling."
+    },
+    {
+        date: "2026-04-27",
+        type: "feature",
+        title: "About Page & Discord Integration",
+        description: "New About page with platform mission, features, and team info. Discord invite button added to navigation."
+    }
+];
+
+const RULES = [
+    {
+        num: "01",
+        title: "Spam / Low Quality",
+        severity: "red",
+        content: "Do not spam scripts, messages, or low-quality content. Repeated uploads of broken, empty, or placeholder scripts will result in removal and potential ban. Keep all submissions meaningful and tested."
+    },
+    {
+        num: "02",
+        title: "NSFW / Inappropriate Content",
+        severity: "red",
+        content: "Absolutely no NSFW, sexual, or inappropriate content of any kind. This includes scripts, descriptions, usernames, and comments. Zero tolerance policy — immediate permanent ban."
+    },
+    {
+        num: "03",
+        title: "Reposting & Credits",
+        severity: "cyan",
+        content: "Do not repost scripts without proper credit to the original creator. If you modify someone else's script, clearly state it's a fork and credit the original author. Claiming others' work as your own will result in removal and ban."
+    },
+    {
+        num: "04",
+        title: "Key Systems",
+        severity: "green",
+        content: "If your script uses a key system, it must be functional and not misleading. Keys should be obtainable — no impossible tasks, no endless ad loops. Clearly label your script as KEY or KEYLESS."
+    },
+    {
+        num: "05",
+        title: "Scamming & Phishing",
+        severity: "red",
+        content: "No scam links, phishing attempts, IP grabbers, token loggers, or any malicious redirects. Any script containing hidden malicious code will be removed immediately and the uploader permanently banned."
+    },
+    {
+        num: "06",
+        title: "Malware & Backdoors",
+        severity: "red",
+        content: "Scripts must not contain malware, backdoors, RATs, keyloggers, crypto miners, or any code that compromises user security. All scripts are subject to review. If your script requires external HTTP requests, the destination must be disclosed."
+    },
+    {
+        num: "07",
+        title: "Harassment & Toxicity",
+        severity: "orange",
+        content: "Be respectful to all community members. No harassment, bullying, doxxing, threats, or discriminatory behavior. This applies to all interactions on the platform and associated Discord server."
+    },
+    {
+        num: "08",
+        title: "Ban Evasion",
+        severity: "purple",
+        content: "Do not attempt to evade bans by creating alternate accounts. Ban evasion will result in permanent bans across all associated accounts. If you believe your ban was unjust, appeal through the Discord server."
+    },
+    {
+        num: "09",
+        title: "Data & Privacy",
+        severity: "cyan",
+        content: "Scripts that collect user data must disclose what data is collected, how it's used, and where it's stored. Any script that silently logs or transmits user data without disclosure will be removed. User privacy is paramount."
+    }
+];
+
+const COMMANDS = [
+    { icon: "📚", label: "Go to Library", action: () => navigate('library') },
+    { icon: "💻", label: "Go to Terminal", action: () => navigate('terminal') },
+    { icon: "📋", label: "Go to Changelog", action: () => navigate('changelog') },
+    { icon: "📜", label: "Go to Rules", action: () => navigate('rules') },
+    { icon: "ℹ️", label: "Go to About", action: () => navigate('about') },
+    { icon: "🏠", label: "Go Home", action: () => navigate('home') },
+    { icon: "💬", label: "Open Discord", action: () => window.open('https://discord.gg/MxtngkPNzy', '_blank') },
+    { icon: "🔍", label: "Search Scripts", action: () => { navigate('library'); setTimeout(() => document.querySelector('.search-bar')?.focus(), 100); } },
+];
+
+
+// ========================================
+// SYNTAX OVERRIDE - Main Application
+// ========================================
+
+let currentPage = 'home';
+let currentFilter = 'all';
+let searchQuery = '';
+
+// ========================================
+// NAVIGATION
+// ========================================
+function navigate(page, data) {
+    currentPage = page;
+    window.scrollTo(0, 0);
+    
+    // Update active nav link
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    const links = document.querySelectorAll('.nav-link');
+    links.forEach(link => {
+        if (link.textContent.toLowerCase().trim() === page) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Close mobile menu
+    document.getElementById('navLinks')?.classList.remove('open');
+    
+    render(data);
+}
+
+function toggleMenu() {
+    document.getElementById('navLinks')?.classList.toggle('open');
+}
+
+// ========================================
+// COMMAND PALETTE
+// ========================================
+function toggleCommandPalette() {
+    const palette = document.getElementById('commandPalette');
+    palette.classList.toggle('open');
+    if (palette.classList.contains('open')) {
+        const input = document.getElementById('cmdInput');
+        input.value = '';
+        input.focus();
+        renderCommands(COMMANDS);
+    }
+}
+
+function filterCommands(query) {
+    const filtered = COMMANDS.filter(cmd => 
+        cmd.label.toLowerCase().includes(query.toLowerCase())
+    );
+    renderCommands(filtered);
+}
+
+function renderCommands(commands) {
+    const container = document.getElementById('cmdResults');
+    container.innerHTML = commands.map(cmd => `
+        <div class="cmd-item" onclick="(${cmd.action.toString()})(); toggleCommandPalette();">
+            <span class="cmd-item-icon">${cmd.icon}</span>
+            <span>${cmd.label}</span>
+        </div>
+    `).join('');
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
+        e.preventDefault();
+        toggleCommandPalette();
+    }
+    if (e.key === 'Escape') {
+        document.getElementById('commandPalette').classList.remove('open');
+    }
+});
+
+// ========================================
+// MATRIX RAIN
+// ========================================
+function initMatrix() {
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
+    const fontSize = 14;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+    
+    function draw() {
+        ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#00ff41';
+        ctx.font = fontSize + 'px monospace';
+        
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars.charAt(Math.floor(Math.random() * chars.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+    
+    setInterval(draw, 50);
+    
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+}
+
+// ========================================
+// STATUS BAR ANIMATION
+// ========================================
+function animateStatusBar() {
+    setInterval(() => {
+        const latency = Math.floor(Math.random() * 8) + 8;
+        const el = document.getElementById('latencyValue');
+        if (el) el.textContent = latency + 'ms';
+    }, 2000);
+}
+
+// ========================================
+// RENDER ENGINE
+// ========================================
+function render(data) {
+    const app = document.getElementById('app');
+    
+    switch (currentPage) {
+        case 'home': app.innerHTML = renderHome(); break;
+        case 'library': app.innerHTML = renderLibrary(); break;
+        case 'terminal': app.innerHTML = renderTerminal(); break;
+        case 'changelog': app.innerHTML = renderChangelog(); break;
+        case 'rules': app.innerHTML = renderRules(); break;
+        case 'about': app.innerHTML = renderAbout(); break;
+        case 'script-detail': app.innerHTML = renderScriptDetail(data); break;
+        default: app.innerHTML = renderHome();
+    }
+}
+
+// ========================================
+// HOME PAGE
+// ========================================
+function renderHome() {
+    return `
+        <section class="home-hero">
+            <div class="code-editor">
+                <div class="editor-header">
+                    <div class="editor-dots">
+                        <span class="dot-red"></span>
+                        <span class="dot-yellow"></span>
+                        <span class="dot-green"></span>
+                    </div>
+                    <span class="editor-title">hook_module.lua</span>
+                    <span class="editor-badge">LIVE</span>
+                </div>
+                <div class="editor-code">
+                    <div class="code-line"><span class="line-num">1</span><span class="code-content"><span class="cm">-- SYNTAX_OVERRIDE :: HOOK_MODULE</span></span></div>
+                    <div class="code-line"><span class="line-num">2</span><span class="code-content"><span class="cm">-- version: 4.2.1 | status: ACTIVE</span></span></div>
+                    <div class="code-line"><span class="line-num">3</span><span class="code-content"></span></div>
+                    <div class="code-line"><span class="line-num">4</span><span class="code-content"><span class="kw">local</span> <span class="var">SyntaxOverride</span> = {}</span></div>
+                    <div class="code-line"><span class="line-num">5</span><span class="code-content"><span class="var">SyntaxOverride</span>.__index = <span class="var">SyntaxOverride</span></span></div>
+                    <div class="code-line"><span class="line-num">6</span><span class="code-content"></span></div>
+                    <div class="code-line"><span class="line-num">7</span><span class="code-content"><span class="kw">function</span> <span class="fn">SyntaxOverride.init</span>(config)</span></div>
+                    <div class="code-line"><span class="line-num">8</span><span class="code-content">    <span class="kw">local</span> <span class="var">self</span> = <span class="fn">setmetatable</span>({}, <span class="var">SyntaxOverride</span>)</span></div>
+                    <div class="code-line"><span class="line-num">9</span><span class="code-content">    <span class="var">self</span>.bypass = <span class="fn">require</span>(<span class="str">"bypass_engine"</span>)</span></div>
+                    <div class="code-line"><span class="line-num">10</span><span class="code-content">    <span class="var">self</span>.stealth = <span class="kw">true</span></span></div>
+                    <div class="code-line"><span class="line-num">11</span><span class="code-content">    <span class="var">self</span>.version = <span class="str">"4.2.1"</span></span></div>
+                    <div class="code-line"><span class="line-num">12</span><span class="code-content"></span></div>
+                    <div class="code-line"><span class="line-num">13</span><span class="code-content">    <span class="fn">print</span>(<span class="str">"[SYNTAX] Override initialized"</span>)</span></div>
+                    <div class="code-line"><span class="line-num">14</span><span class="code-content">    <span class="fn">print</span>(<span class="str">"[SYNTAX] Stealth mode: ACTIVE"</span>)</span></div>
+                    <div class="code-line"><span class="line-num">15</span><span class="code-content">    <span class="kw">return</span> <span class="var">self</span></span></div>
+                    <div class="code-line"><span class="line-num">16</span><span class="code-content"><span class="kw">end</span></span></div>
+                    <div class="code-line"><span class="line-num">17</span><span class="code-content"></span></div>
+                    <div class="code-line"><span class="line-num">18</span><span class="code-content"><span class="var">SyntaxOverride</span>.<span class="fn">init</span>()</span></div>
+                </div>
+            </div>
+            <div class="hero-content">
+                <span class="hero-label">// COMMAND CENTER V4.2.1</span>
+                <h1 class="hero-title">SYNTAX<br>OVERRIDE</h1>
+                <p class="hero-desc">Advanced Lua engineering platform for the Roblox ecosystem. Precision-crafted scripts with stealth execution, bypass modules, and real-time injection protocols.</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="navigate('library')">BROWSE LIBRARY</button>
+                    <button class="btn-secondary" onclick="navigate('terminal')">OPEN TERMINAL</button>
+                </div>
+                <span class="hero-shortcut">PRESS [/] TO OPEN COMMAND PALETTE</span>
+            </div>
+        </section>
+
+        <section class="metrics-section">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">1,402</div>
+                    <div class="metric-label">Active Scripts</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">99.2%</div>
+                    <div class="metric-label">Bypass Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">12ms</div>
+                    <div class="metric-label">Avg Latency</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0.01%</div>
+                    <div class="metric-label">Detection Rate</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="protocol-section">
+            <h2 class="section-title">// EXECUTION PROTOCOL</h2>
+            <div class="protocol-steps">
+                <div class="protocol-step">
+                    <span class="step-num">01</span>
+                    <div>
+                        <div class="step-title">SELECT</div>
+                        <div class="step-desc">Browse the script library and select your target module. Filter by game, risk level, or key type.</div>
+                    </div>
+                </div>
+                <div class="protocol-step">
+                    <span class="step-num">02</span>
+                    <div>
+                        <div class="step-title">CONFIGURE</div>
+                        <div class="step-desc">Review the script code, check version compatibility, and configure execution parameters.</div>
+                    </div>
+                </div>
+                <div class="protocol-step">
+                    <span class="step-num">03</span>
+                    <div>
+                        <div class="step-title">DEPLOY</div>
+                        <div class="step-desc">Copy the script to your executor and deploy. Real-time status monitoring available in the terminal.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
+            <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+        </div>
+    `;
+}
+
+// ========================================
+// LIBRARY PAGE
+// ========================================
+function renderLibrary() {
+    const libraryScripts = SCRIPTS.filter(s => s.category === 'library');
+    const filtered = filterScripts(libraryScripts);
+    
+    return `
+        <div class="page-container">
+            <div class="page-header">
+                <h1 class="page-title">SCRIPT REPOSITORY</h1>
+                <span class="page-count">${filtered.length} scripts indexed</span>
+            </div>
+            
+            <input type="text" class="search-bar" placeholder="SEARCH SCRIPTS, GAMES..." 
+                   oninput="searchQuery = this.value; navigate('library')" value="${searchQuery}">
+            
+            <div class="filter-bar">
+                <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="currentFilter='all'; navigate('library')">ALL</button>
+                <button class="filter-btn ${currentFilter === 'keyless' ? 'active' : ''}" onclick="currentFilter='keyless'; navigate('library')">KEYLESS</button>
+                <button class="filter-btn ${currentFilter === 'key' ? 'active' : ''}" onclick="currentFilter='key'; navigate('library')">KEY</button>
+                <button class="filter-btn ${currentFilter === 'universal' ? 'active' : ''}" onclick="currentFilter='universal'; navigate('library')">UNIVERSAL</button>
+            </div>
+            
+            <div class="scripts-grid">
+                ${filtered.map(script => renderScriptCard(script)).join('')}
+            </div>
+            
+            <div class="footer">
+                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
+                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+            </div>
+        </div>
+    `;
+}
+
+function filterScripts(scripts) {
+    let result = scripts;
+    
+    if (currentFilter !== 'all') {
+        if (currentFilter === 'universal') {
+            result = result.filter(s => s.game === 'Universal');
+        } else {
+            result = result.filter(s => s.keyType === currentFilter);
+        }
+    }
+    
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        result = result.filter(s => 
+            s.title.toLowerCase().includes(q) || 
+            s.game.toLowerCase().includes(q) || 
+            s.description.toLowerCase().includes(q)
+        );
+    }
+    
+    return result;
+}
+
+function renderScriptCard(script) {
+    const statusClass = script.status === 'active' ? 'status-active' : script.status === 'testing' ? 'status-testing' : 'status-patched';
+    const riskClass = script.riskLevel === 'low' ? 'risk-low' : script.riskLevel === 'medium' ? 'risk-medium' : 'risk-high';
+    const keyClass = script.keyType === 'keyless' ? 'badge-keyless' : 'badge-key';
+    
+    return `
+        <div class="script-card">
+            <div class="script-card-header">
+                <span class="script-status ${statusClass}">${script.status.toUpperCase()}</span>
+                <span class="script-game-tag">${script.game}</span>
+            </div>
+            <div class="script-card-body">
+                <div class="script-title">${script.title}</div>
+                <div class="script-desc">${script.description}</div>
+                <div class="script-meta">
+                    <span class="meta-badge ${keyClass}">${script.keyType.toUpperCase()}</span>
+                    <span class="meta-badge ${riskClass}">${script.riskLevel.toUpperCase()}_RISK</span>
+                    <span class="meta-badge" style="color: var(--text-muted); background: rgba(255,255,255,0.05);">👁 ${script.views}</span>
+                </div>
+            </div>
+            <div class="script-card-footer">
+                <span class="script-version">v${script.version}</span>
+                <button class="view-code-btn" onclick="navigate('script-detail', ${script.id})">VIEW CODE</button>
+            </div>
+        </div>
+    `;
+}
+
+// ========================================
+// SCRIPT DETAIL PAGE
+// ========================================
+function renderScriptDetail(scriptId) {
+    const script = SCRIPTS.find(s => s.id === scriptId);
+    if (!script) return '<div class="page-container"><p>Script not found.</p></div>';
+    
+    const riskClass = script.riskLevel === 'low' ? 'risk-low' : script.riskLevel === 'medium' ? 'risk-medium' : 'risk-high';
+    const keyClass = script.keyType === 'keyless' ? 'badge-keyless' : 'badge-key';
+    
+    return `
+        <div class="script-detail">
+            <button class="back-btn" onclick="navigate('${script.category === 'terminal' ? 'terminal' : 'library'}')">← BACK</button>
+            
+            <h1 class="page-title">${script.title}</h1>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem; line-height: 1.6;">${script.description}</p>
+            
+            <div class="detail-meta-grid">
+                <div class="detail-meta-item">
+                    <div class="detail-meta-label">Game</div>
+                    <div class="detail-meta-value">${script.game}</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-label">Key Type</div>
+                    <div class="detail-meta-value">${script.keyType.toUpperCase()}</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-label">Version</div>
+                    <div class="detail-meta-value">v${script.version}</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-label">Risk Level</div>
+                    <div class="detail-meta-value">${script.riskLevel.toUpperCase()}</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-label">Status</div>
+                    <div class="detail-meta-value">${script.status.toUpperCase()}</div>
+                </div>
+                <div class="detail-meta-item">
+                    <div class="detail-meta-label">Views</div>
+                    <div class="detail-meta-value">${script.views}</div>
+                </div>
+            </div>
+            
+            <div class="detail-code-block">
+                <div class="detail-code-header">
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">${script.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}.lua</span>
+                    <button class="copy-btn" onclick="copyCode(this, ${script.id})">COPY CODE</button>
+                </div>
+                <pre class="detail-code-content">${escapeHtml(script.code)}</pre>
+            </div>
+            
+            <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 1rem;">Created by +1 aura &middot; Syntax Override</p>
+            
+            <div class="footer">
+                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
+                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+            </div>
+        </div>
+    `;
+}
+
+function copyCode(btn, scriptId) {
+    const script = SCRIPTS.find(s => s.id === scriptId);
+    if (!script) return;
+    
+    navigator.clipboard.writeText(script.code).then(() => {
+        btn.textContent = 'COPIED!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'COPY CODE';
+            btn.classList.remove('copied');
+        }, 2000);
+    }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = script.code;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        btn.textContent = 'COPIED!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'COPY CODE';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ========================================
+// TERMINAL PAGE
+// ========================================
+function renderTerminal() {
+    const terminalScripts = SCRIPTS.filter(s => s.category === 'terminal');
+    
+    return `
+        <div class="page-container">
+            <div class="page-header">
+                <h1 class="page-title">TERMINAL</h1>
+            </div>
+            
+            <div class="terminal-input-bar">
+                <input type="text" class="terminal-input" placeholder="Enter Lua command..." id="terminalInput" 
+                       onkeydown="if(event.key==='Enter') runTerminalCmd()">
+                <button class="terminal-enter-btn" onclick="runTerminalCmd()">[ENTER]</button>
+            </div>
+            
+            <div id="terminalOutput"></div>
+            
+            <input type="text" class="search-bar" placeholder="SEARCH TERMINAL SCRIPTS, GAMES..." 
+                   oninput="filterTerminal(this.value)" style="margin-top: 1.5rem;">
+            
+            <div class="terminal-file-header">TERMINAL_SCRIPTS.LUA</div>
+            <div class="terminal-list" id="terminalList">
+                ${terminalScripts.map((script, i) => {
+                    const statusColor = script.status === 'active' ? 'var(--neon-green)' : script.status === 'testing' ? 'var(--neon-yellow)' : 'var(--neon-red)';
+                    return `
+                        <div class="terminal-item" onclick="navigate('script-detail', ${script.id})" data-title="${script.title.toLowerCase()}" data-game="${script.game.toLowerCase()}">
+                            <span class="terminal-line-num">${String(i + 1).padStart(2, '0')}</span>
+                            <span class="terminal-item-title">${script.title}</span>
+                            <div class="terminal-item-meta">
+                                <span class="terminal-tag" style="background: rgba(0,229,255,0.1); color: var(--neon-cyan);">${script.game}</span>
+                                <span class="terminal-tag" style="background: rgba(0,0,0,0.3); color: var(--text-muted);">${Math.floor(Math.random() * 15 + 3)}ms</span>
+                                <span class="terminal-tag badge-keyless">${script.keyType.toUpperCase()}</span>
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: ${statusColor}; flex-shrink: 0;"></span>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            
+            <div class="terminal-legend">
+                <div class="legend-item"><span class="legend-dot working"></span> Working / Active</div>
+                <div class="legend-item"><span class="legend-dot patched"></span> Patched / Not Working</div>
+                <div class="legend-item"><span class="legend-dot testing"></span> Testing</div>
+            </div>
+            
+            <div class="footer">
+                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
+                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+            </div>
+        </div>
+    `;
+}
+
+function runTerminalCmd() {
+    const input = document.getElementById('terminalInput');
+    const output = document.getElementById('terminalOutput');
+    const cmd = input.value.trim();
+    
+    if (!cmd) return;
+    
+    let result = '';
+    
+    if (cmd.toLowerCase().includes('print')) {
+        const match = cmd.match(/print\s*\(\s*["'](.+?)["']\s*\)/);
+        result = match ? match[1] : 'nil';
+    } else if (cmd.toLowerCase() === 'help') {
+        result = 'Available commands: print("text"), help, clear, version, scripts';
+    } else if (cmd.toLowerCase() === 'clear') {
+        output.innerHTML = '';
+        input.value = '';
+        return;
+    } else if (cmd.toLowerCase() === 'version') {
+        result = 'Syntax Override Terminal v4.2.1';
+    } else if (cmd.toLowerCase() === 'scripts') {
+        result = SCRIPTS.filter(s => s.category === 'terminal').map(s => s.title).join('\\n');
+    } else {
+        result = `[ERROR] Unknown command: ${cmd}`;
+    }
+    
+    output.innerHTML += `
+        <div style="padding: 0.5rem 1rem; font-size: 0.8rem; border-bottom: 1px solid var(--border);">
+            <div style="color: var(--neon-green);">> ${escapeHtml(cmd)}</div>
+            <div style="color: var(--text-secondary); margin-top: 0.25rem; white-space: pre-wrap;">${escapeHtml(result)}</div>
+        </div>
+    `;
+    
+    input.value = '';
+    output.scrollTop = output.scrollHeight;
+}
+
+function filterTerminal(query) {
+    const items = document.querySelectorAll('.terminal-item');
+    const q = query.toLowerCase();
+    items.forEach(item => {
+        const title = item.dataset.title;
+        const game = item.dataset.game;
+        item.style.display = (title.includes(q) || game.includes(q)) ? 'flex' : 'none';
+    });
+}
+
+// ========================================
+// CHANGELOG PAGE
+// ========================================
+function renderChangelog() {
+    return `
+        <div class="page-container">
+            <div class="page-header">
+                <h1 class="page-title">SYSTEM CHANGELOG</h1>
+            </div>
+            
+            <div class="changelog-timeline">
+                ${CHANGELOG.map(entry => `
+                    <div class="changelog-entry">
+                        <div class="changelog-date">${entry.date}</div>
+                        <span class="changelog-type">${entry.type.toUpperCase()}</span>
+                        <div class="changelog-title">${entry.title}</div>
+                        <div class="changelog-desc">${entry.description}</div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="footer">
+                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
+                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+            </div>
+        </div>
+    `;
+}
+
+// ========================================
+// RULES PAGE
+// ========================================
+function renderRules() {
+    return `
+        <div class="page-container">
+            <div class="page-header">
+                <h1 class="page-title">COMMUNITY RULES</h1>
+            </div>
+            
+            <div class="rules-list">
+                ${RULES.map(rule => `
+                    <div class="rule-item rule-severity-${rule.severity}">
+                        <div class="rule-header" onclick="this.parentElement.classList.toggle('open')">
+                            <div class="rule-num-title">
+                                <span class="rule-num">${rule.num}</span>
+                                <span class="rule-title">${rule.title}</span>
+                            </div>
+                            <span class="rule-arrow">▼</span>
+                        </div>
+                        <div class="rule-content">${rule.content}</div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="footer">
+                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
+                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+            </div>
+        </div>
+    `;
+}
+
+// ========================================
+// ABOUT PAGE
+// ========================================
+function renderAbout() {
+    return `
+        <div class="page-container">
+            <div class="page-header">
+                <h1 class="page-title">ABOUT SYNTAX OVERRIDE</h1>
+            </div>
+            
+            <div class="about-section">
+                <p class="about-intro">Syntax Override is an advanced Lua engineering platform built for the Roblox ecosystem. We provide precision-crafted scripts, a real-time terminal, and a community-driven library of tools for developers and power users.</p>
+            </div>
+            
+            <div class="about-section">
+                <h2 class="about-subtitle">// MISSION</h2>
+                <p class="about-mission">To build the most reliable, transparent, and community-driven script platform in the Roblox ecosystem. Every script is reviewed, every tool is tested, and every user is respected.</p>
+            </div>
+            
+            <div class="about-section">
+                <h2 class="about-subtitle">// PLATFORM FEATURES</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <div class="feature-title">Script Library</div>
+                        <div class="feature-desc">Curated collection of tested scripts with risk levels, key types, and real-time status tracking.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💻</div>
+                        <div class="feature-title">Live Terminal</div>
+                        <div class="feature-desc">Interactive terminal for quick script testing and command execution.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-title">Status Tracking</div>
+                        <div class="feature-desc">Real-time monitoring of script status, latency, and detection rates.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-title">Fast Injection</div>
+                        <div class="feature-desc">Optimized script delivery with minimal latency and maximum bypass rates.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-title">Community</div>
+                        <div class="feature-desc">Growing community of scripters, developers, and creators on Discord.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📤</div>
+                        <div class="feature-title">Script Upload</div>
+                        <div class="feature-desc">Submit your own scripts for review and share them with the community.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-section">
+                <h2 class="about-subtitle">// THE TEAM</h2>
+                <div class="team-card">
+                    <div class="team-avatar">+1</div>
+                    <div>
+                        <div class="team-name">+1 AURA</div>
+                        <div class="team-role">Founder & Lead Developer</div>
+                        <div class="team-desc">Builder of Syntax Override. Architect of the platform, design system, and script library.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-section">
+                <h2 class="about-subtitle">// JOIN THE COMMUNITY</h2>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">Connect with scripters, share your work, and stay updated on new releases.</p>
+                <a href="https://discord.gg/MxtngkPNzy" target="_blank" class="discord-cta">
+                    💬 JOIN DISCORD
+                </a>
+            </div>
+            
+            <div class="footer">
+                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
+                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+            </div>
+        </div>
+    `;
+}
+
+// ========================================
+// INIT
+// ========================================
+document.addEventListener('DOMContentLoaded', () => {
+    initMatrix();
+    animateStatusBar();
+    render();
+});
+
+    </script>
 </body>
 </html>
