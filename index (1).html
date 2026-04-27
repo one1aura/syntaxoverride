@@ -1308,6 +1308,49 @@ body {
 .footer a:hover { text-decoration: underline; }
 
 /* ========================================
+   VIBE CODED BADGE
+   ======================================== */
+.vibe-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background: linear-gradient(135deg, rgba(180, 0, 255, 0.15), rgba(0, 229, 255, 0.15));
+    border: 1px solid rgba(180, 0, 255, 0.4);
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--neon-purple);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(180, 0, 255, 0.4);
+    box-shadow: 0 0 20px rgba(180, 0, 255, 0.1), inset 0 0 15px rgba(180, 0, 255, 0.05);
+    animation: vibe-pulse 3s ease-in-out infinite;
+    cursor: default;
+}
+
+.vibe-badge-lg {
+    padding: 0.75rem 1.75rem;
+    font-size: 0.85rem;
+    gap: 0.75rem;
+}
+
+.vibe-emoji {
+    font-size: 1rem;
+    animation: vibe-bounce 2s ease-in-out infinite;
+}
+
+@keyframes vibe-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(180, 0, 255, 0.1), inset 0 0 15px rgba(180, 0, 255, 0.05); }
+    50% { box-shadow: 0 0 30px rgba(180, 0, 255, 0.25), inset 0 0 20px rgba(180, 0, 255, 0.1); border-color: rgba(0, 229, 255, 0.5); color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0, 229, 255, 0.4); }
+}
+
+@keyframes vibe-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* ========================================
    RESPONSIVE
    ======================================== */
 @media (max-width: 900px) {
@@ -1374,6 +1417,7 @@ body {
     
     .script-meta { gap: 0.5rem; }
 }
+
     </style>
 </head>
 <body>
@@ -1953,6 +1997,7 @@ const COMMANDS = [
     { icon: "🔍", label: "Search Scripts", action: () => { navigate('library'); setTimeout(() => document.querySelector('.search-bar')?.focus(), 100); } },
 ];
 
+
 // ========================================
 // SYNTAX OVERRIDE - Main Application
 // ========================================
@@ -2144,6 +2189,7 @@ function renderHome() {
                     <button class="btn-primary" onclick="navigate('library')">BROWSE LIBRARY</button>
                     <button class="btn-secondary" onclick="navigate('terminal')">OPEN TERMINAL</button>
                 </div>
+                <div class="vibe-badge"><span class="vibe-emoji">✨</span> VIBE CODED <span class="vibe-emoji">🎵</span></div>
                 <span class="hero-shortcut">PRESS [/] TO OPEN COMMAND PALETTE</span>
             </div>
         </section>
@@ -2199,6 +2245,7 @@ function renderHome() {
         <div class="footer">
             &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
             <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+            &middot; <span class="vibe-badge" style="font-size: 0.6rem; padding: 0.25rem 0.75rem;"><span class="vibe-emoji" style="font-size: 0.7rem;">✨</span> VIBE CODED</span>
         </div>
     `;
 }
@@ -2234,6 +2281,7 @@ function renderLibrary() {
             <div class="footer">
                 &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
                 <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+                &middot; <span class="vibe-badge" style="font-size: 0.6rem; padding: 0.25rem 0.75rem;"><span class="vibe-emoji" style="font-size: 0.7rem;">✨</span> VIBE CODED</span>
             </div>
         </div>
     `;
@@ -2347,6 +2395,7 @@ function renderScriptDetail(scriptId) {
             <div class="footer">
                 &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
                 <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+                &middot; <span class="vibe-badge" style="font-size: 0.6rem; padding: 0.25rem 0.75rem;"><span class="vibe-emoji" style="font-size: 0.7rem;">✨</span> VIBE CODED</span>
             </div>
         </div>
     `;
@@ -2437,6 +2486,7 @@ function renderTerminal() {
             <div class="footer">
                 &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
                 <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+                &middot; <span class="vibe-badge" style="font-size: 0.6rem; padding: 0.25rem 0.75rem;"><span class="vibe-emoji" style="font-size: 0.7rem;">✨</span> VIBE CODED</span>
             </div>
         </div>
     `;
@@ -2513,6 +2563,7 @@ function renderChangelog() {
             <div class="footer">
                 &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
                 <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+                &middot; <span class="vibe-badge" style="font-size: 0.6rem; padding: 0.25rem 0.75rem;"><span class="vibe-emoji" style="font-size: 0.7rem;">✨</span> VIBE CODED</span>
             </div>
         </div>
     `;
@@ -2546,6 +2597,7 @@ function renderRules() {
             <div class="footer">
                 &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
                 <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+                &middot; <span class="vibe-badge" style="font-size: 0.6rem; padding: 0.25rem 0.75rem;"><span class="vibe-emoji" style="font-size: 0.7rem;">✨</span> VIBE CODED</span>
             </div>
         </div>
     `;
@@ -2614,6 +2666,7 @@ function renderAbout() {
                         <div class="team-name">+1 AURA</div>
                         <div class="team-role">Founder & Lead Developer</div>
                         <div class="team-desc">Builder of Syntax Override. Architect of the platform, design system, and script library.</div>
+                        <div style="margin-top: 0.75rem;"><span class="vibe-badge"><span class="vibe-emoji">✨</span> VIBE CODED <span class="vibe-emoji">🎵</span></span></div>
                     </div>
                 </div>
             </div>
@@ -2629,6 +2682,7 @@ function renderAbout() {
             <div class="footer">
                 &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
                 <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
+                &middot; <span class="vibe-badge" style="font-size: 0.6rem; padding: 0.25rem 0.75rem;"><span class="vibe-emoji" style="font-size: 0.7rem;">✨</span> VIBE CODED</span>
             </div>
         </div>
     `;
@@ -2642,6 +2696,7 @@ document.addEventListener('DOMContentLoaded', () => {
     animateStatusBar();
     render();
 });
+
     </script>
 </body>
 </html>
