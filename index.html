@@ -8,10 +8,6 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-/* ========================================
-   SYNTAX OVERRIDE - Cyberpunk Theme
-   ======================================== */
-
 :root {
     --bg-primary: #0a0a0f;
     --bg-secondary: #0f0f1a;
@@ -31,1350 +27,309 @@
     --font-mono: 'JetBrains Mono', monospace;
     --font-display: 'Orbitron', sans-serif;
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 html { scroll-behavior: smooth; }
-
-body {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-
-::selection {
-    background: var(--neon-green);
-    color: var(--bg-primary);
-}
-
+body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-mono); min-height: 100vh; overflow-x: hidden; }
+::selection { background: var(--neon-green); color: var(--bg-primary); }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb { background: var(--neon-green); border-radius: 3px; }
+#matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.06; pointer-events: none; }
 
-/* Matrix Rain */
-#matrix-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    opacity: 0.06;
-    pointer-events: none;
-}
+/* NAVBAR */
+.navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; background: rgba(10,10,15,0.95); border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); }
+.nav-brand { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+.brand-icon { font-size: 1.4rem; filter: drop-shadow(0 0 8px var(--neon-yellow)); }
+.brand-text { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; color: var(--neon-green); letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-green); }
+.nav-links { display: flex; align-items: center; gap: 0.25rem; }
+.nav-link { padding: 0.5rem 0.75rem; color: var(--text-secondary); text-decoration: none; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; border-radius: 4px; }
+.nav-link:hover { color: var(--neon-green); background: rgba(0,255,65,0.08); text-shadow: 0 0 8px var(--neon-green); }
+.nav-link.active { color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green); }
+.discord-btn { color: var(--neon-yellow)!important; border: 1px solid var(--neon-yellow); text-shadow: 0 0 8px var(--neon-yellow); box-shadow: 0 0 10px rgba(232,255,0,0.15); }
+.discord-btn:hover { background: rgba(232,255,0,0.15)!important; color: var(--neon-yellow)!important; }
+.cmd-btn { padding: 0.4rem 0.75rem; background: transparent; border: 1px solid var(--text-muted); color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.7rem; cursor: pointer; border-radius: 4px; transition: all 0.3s; }
+.cmd-btn:hover { border-color: var(--neon-green); color: var(--neon-green); }
+.hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 5px; }
+.hamburger span { width: 24px; height: 2px; background: var(--neon-green); transition: all 0.3s; }
 
-/* ========================================
-   NAVBAR
-   ======================================== */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    height: 60px;
-    background: rgba(10, 10, 15, 0.95);
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(10px);
-}
+/* AUTH */
+.auth-btn { padding: 0.4rem 0.75rem; background: var(--neon-green); color: var(--bg-primary); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
+.auth-btn:hover { box-shadow: 0 0 15px rgba(0,255,65,0.4); }
+.user-menu { position: relative; display: flex; align-items: center; gap: 0.5rem; }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--neon-green); cursor: pointer; object-fit: cover; background: var(--bg-card); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--neon-green); }
+.user-dropdown { display: none; position: absolute; top: 45px; right: 0; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; min-width: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; z-index: 2000; }
+.user-dropdown.open { display: block; }
+.dropdown-item { padding: 0.75rem 1rem; font-size: 0.75rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
+.dropdown-item:hover { background: rgba(0,255,65,0.08); color: var(--neon-green); }
+.dropdown-divider { height: 1px; background: var(--border); }
+.dropdown-item.admin { color: var(--neon-red); }
+.dropdown-item.admin:hover { background: rgba(255,0,64,0.08); color: var(--neon-red); }
 
-.nav-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.brand-icon {
-    font-size: 1.4rem;
-    filter: drop-shadow(0 0 8px var(--neon-yellow));
-}
-
-.brand-text {
-    font-family: var(--font-display);
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--neon-green);
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px var(--neon-green);
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.nav-link {
-    padding: 0.5rem 0.75rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 4px;
-}
-
-.nav-link:hover {
-    color: var(--neon-green);
-    background: rgba(0, 255, 65, 0.08);
-    text-shadow: 0 0 8px var(--neon-green);
-}
-
-.nav-link.active {
-    color: var(--neon-green);
-    text-shadow: 0 0 8px var(--neon-green);
-}
-
-.discord-btn {
-    color: var(--neon-yellow) !important;
-    border: 1px solid var(--neon-yellow);
-    text-shadow: 0 0 8px var(--neon-yellow);
-    box-shadow: 0 0 10px rgba(232, 255, 0, 0.15);
-}
-
-.discord-btn:hover {
-    background: rgba(232, 255, 0, 0.15) !important;
-    color: var(--neon-yellow) !important;
-    box-shadow: 0 0 20px rgba(232, 255, 0, 0.3);
-}
-
-.cmd-btn {
-    padding: 0.4rem 0.75rem;
-    background: transparent;
-    border: 1px solid var(--text-muted);
-    color: var(--text-secondary);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.cmd-btn:hover {
-    border-color: var(--neon-green);
-    color: var(--neon-green);
-    box-shadow: 0 0 10px var(--border-glow);
-}
-
-/* Hamburger */
-.hamburger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.hamburger span {
-    width: 24px;
-    height: 2px;
-    background: var(--neon-green);
-    transition: all 0.3s ease;
-}
-
-/* ========================================
-   COMMAND PALETTE
-   ======================================== */
-.command-palette {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2000;
-}
-
+/* COMMAND PALETTE */
+.command-palette { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000; }
 .command-palette.open { display: block; }
-
-.cmd-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-}
-
-.cmd-modal {
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 500px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--neon-green);
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
-    overflow: hidden;
-}
-
-.cmd-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.65rem;
-    color: var(--text-muted);
-}
-
-.cmd-input {
-    width: 100%;
-    padding: 1rem;
-    background: transparent;
-    border: none;
-    color: var(--neon-green);
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    outline: none;
-}
-
+.cmd-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+.cmd-modal { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--neon-green); border-radius: 8px; box-shadow: 0 0 30px rgba(0,255,65,0.1); overflow: hidden; }
+.cmd-header { display: flex; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.65rem; color: var(--text-muted); }
+.cmd-input { width: 100%; padding: 1rem; background: transparent; border: none; color: var(--neon-green); font-family: var(--font-mono); font-size: 0.9rem; outline: none; }
 .cmd-input::placeholder { color: var(--text-muted); }
+.cmd-results { max-height: 300px; overflow-y: auto; border-top: 1px solid var(--border); }
+.cmd-item { padding: 0.75rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: var(--text-secondary); transition: all 0.2s; }
+.cmd-item:hover { background: rgba(0,255,65,0.08); color: var(--neon-green); }
 
-.cmd-results {
-    max-height: 300px;
-    overflow-y: auto;
-    border-top: 1px solid var(--border);
-}
-
-.cmd-item {
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    transition: all 0.2s ease;
-}
-
-.cmd-item:hover {
-    background: rgba(0, 255, 65, 0.08);
-    color: var(--neon-green);
-}
-
-.cmd-item-icon { font-size: 1rem; }
-
-/* ========================================
-   STATUS BAR
-   ======================================== */
-.status-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    padding: 0 1.5rem;
-    height: 32px;
-    background: rgba(10, 10, 15, 0.95);
-    border-top: 1px solid var(--border);
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    backdrop-filter: blur(10px);
-}
-
+/* STATUS BAR */
+.status-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; gap: 2rem; padding: 0 1.5rem; height: 32px; background: rgba(10,10,15,0.95); border-top: 1px solid var(--border); font-size: 0.65rem; color: var(--text-muted); backdrop-filter: blur(10px); }
 .status-item { display: flex; gap: 0.4rem; }
 .status-label { color: var(--text-muted); }
 .status-value { color: var(--neon-green); }
 .status-item.version { margin-left: auto; }
 
-/* ========================================
-   MAIN CONTENT
-   ======================================== */
-#app {
-    position: relative;
-    z-index: 1;
-    margin-top: 60px;
-    margin-bottom: 32px;
-    min-height: calc(100vh - 92px);
-}
+/* MAIN */
+#app { position: relative; z-index: 1; margin-top: 60px; margin-bottom: 32px; min-height: calc(100vh - 92px); }
 
-/* ========================================
-   HOME PAGE
-   ======================================== */
-.home-hero {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: calc(100vh - 92px);
-    padding: 2rem;
-    gap: 2rem;
-    align-items: center;
-}
+/* HOME */
+.home-hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 92px); padding: 2rem; gap: 2rem; align-items: center; }
+.code-editor { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 0 30px rgba(0,255,65,0.05); }
+.editor-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); }
+.editor-dots { display: flex; gap: 6px; }
+.editor-dots span { width: 10px; height: 10px; border-radius: 50%; }
+.dot-red { background: #ff5f57; } .dot-yellow { background: #ffbd2e; } .dot-green { background: #28c840; }
+.editor-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.editor-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 3px; background: rgba(0,255,65,0.15); color: var(--neon-green); border: 1px solid rgba(0,255,65,0.3); }
+.editor-code { padding: 1.5rem; font-size: 0.8rem; line-height: 1.7; overflow-x: auto; }
+.code-line { display: flex; gap: 1rem; }
+.line-num { color: var(--text-muted); min-width: 2ch; text-align: right; user-select: none; }
+.kw { color: #ff79c6; } .fn { color: #50fa7b; } .str { color: #f1fa8c; } .cm { color: #6272a4; } .var { color: #8be9fd; } .num { color: #bd93f9; }
+.hero-content { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+.hero-label { font-size: 0.7rem; color: var(--neon-green); letter-spacing: 3px; text-transform: uppercase; }
+.hero-title { font-family: var(--font-display); font-size: 3rem; font-weight: 900; line-height: 1.1; color: #fff; text-shadow: 0 0 30px rgba(255,255,255,0.1); }
+.hero-desc { font-size: 0.85rem; line-height: 1.7; color: var(--text-secondary); max-width: 500px; }
+.hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-primary { padding: 0.8rem 1.5rem; background: var(--neon-green); color: var(--bg-primary); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border: none; border-radius: 4px; cursor: pointer; transition: all 0.3s; }
+.btn-primary:hover { box-shadow: 0 0 20px rgba(0,255,65,0.4); transform: translateY(-2px); }
+.btn-secondary { padding: 0.8rem 1.5rem; background: transparent; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: all 0.3s; }
+.btn-secondary:hover { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 15px var(--border-glow); }
+.hero-shortcut { font-size: 0.7rem; color: var(--text-muted); }
+.metrics-section { padding: 4rem 2rem; }
+.metrics-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; max-width: 1000px; margin: 0 auto; }
+.metric-card { background: var(--bg-card); border: 1px dashed var(--neon-yellow); border-radius: 8px; padding: 1.5rem; text-align: center; transition: all 0.3s; }
+.metric-card:hover { border-color: var(--neon-green); box-shadow: 0 0 20px var(--border-glow); transform: translateY(-3px); }
+.metric-value { font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--neon-green); text-shadow: 0 0 15px rgba(0,255,65,0.3); }
+.metric-label { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+.protocol-section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
+.section-title { font-family: var(--font-display); font-size: 1.2rem; color: var(--neon-green); margin-bottom: 2rem; letter-spacing: 3px; text-shadow: 0 0 10px rgba(0,255,65,0.3); }
+.protocol-steps { display: flex; flex-direction: column; gap: 1.5rem; }
+.protocol-step { display: flex; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; transition: all 0.3s; }
+.protocol-step:hover { border-color: var(--neon-green); box-shadow: 0 0 15px var(--border-glow); }
+.step-num { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: var(--neon-yellow); min-width: 40px; }
+.step-title { font-size: 0.9rem; font-weight: 700; color: var(--neon-green); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 2px; }
+.step-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6; }
 
-.code-editor {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(0, 255, 65, 0.05);
-}
-
-.editor-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-bottom: 1px solid var(--border);
-}
-
-.editor-dots {
-    display: flex;
-    gap: 6px;
-}
-
-.editor-dots span {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-
-.dot-red { background: #ff5f57; }
-.dot-yellow { background: #ffbd2e; }
-.dot-green { background: #28c840; }
-
-.editor-title {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.editor-badge {
-    font-size: 0.6rem;
-    padding: 2px 8px;
-    border-radius: 3px;
-    background: rgba(0, 255, 65, 0.15);
-    color: var(--neon-green);
-    border: 1px solid rgba(0, 255, 65, 0.3);
-}
-
-.editor-code {
-    padding: 1.5rem;
-    font-size: 0.8rem;
-    line-height: 1.7;
-    overflow-x: auto;
-}
-
-.code-line {
-    display: flex;
-    gap: 1rem;
-}
-
-.line-num {
-    color: var(--text-muted);
-    min-width: 2ch;
-    text-align: right;
-    user-select: none;
-}
-
-.code-content { flex: 1; }
-
-/* Syntax colors */
-.kw { color: #ff79c6; }
-.fn { color: #50fa7b; }
-.str { color: #f1fa8c; }
-.cm { color: #6272a4; }
-.op { color: #ff79c6; }
-.var { color: #8be9fd; }
-.num { color: #bd93f9; }
-
-.hero-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 2rem;
-}
-
-.hero-label {
-    font-size: 0.7rem;
-    color: var(--neon-green);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-}
-
-.hero-title {
-    font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 900;
-    line-height: 1.1;
-    color: #fff;
-    text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-}
-
-.hero-desc {
-    font-size: 0.85rem;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    max-width: 500px;
-}
-
-.hero-buttons {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.btn-primary {
-    padding: 0.8rem 1.5rem;
-    background: var(--neon-green);
-    color: var(--bg-primary);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-shadow: none;
-}
-
-.btn-primary:hover {
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
-    transform: translateY(-2px);
-}
-
-.btn-secondary {
-    padding: 0.8rem 1.5rem;
-    background: transparent;
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-    border-color: var(--neon-green);
-    color: var(--neon-green);
-    box-shadow: 0 0 15px var(--border-glow);
-}
-
-.hero-shortcut {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-}
-
-/* Metrics Section */
-.metrics-section {
-    padding: 4rem 2rem;
-}
-
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.metric-card {
-    background: var(--bg-card);
-    border: 1px dashed var(--neon-yellow);
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-.metric-card:hover {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 20px var(--border-glow);
-    transform: translateY(-3px);
-}
-
-.metric-value {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 900;
-    color: var(--neon-green);
-    text-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-}
-
-.metric-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-top: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Execution Protocol */
-.protocol-section {
-    padding: 4rem 2rem;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.section-title {
-    font-family: var(--font-display);
-    font-size: 1.2rem;
-    color: var(--neon-green);
-    margin-bottom: 2rem;
-    letter-spacing: 3px;
-    text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
-}
-
-.protocol-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.protocol-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.protocol-step:hover {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 15px var(--border-glow);
-}
-
-.step-num {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--neon-yellow);
-    min-width: 40px;
-}
-
-.step-title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--neon-green);
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.step-desc {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-
-/* ========================================
-   LIBRARY PAGE
-   ======================================== */
-.page-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.page-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    color: var(--neon-green);
-    letter-spacing: 3px;
-    text-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-}
-
-.page-count {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-.search-bar {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    color: var(--neon-green);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    border-radius: 4px;
-    outline: none;
-    margin-bottom: 1rem;
-    transition: border-color 0.3s;
-}
-
-.search-bar:focus {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 10px var(--border-glow);
-}
-
+/* PAGES */
+.page-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+.page-title { font-family: var(--font-display); font-size: 1.5rem; color: var(--neon-green); letter-spacing: 3px; text-shadow: 0 0 15px rgba(0,255,65,0.3); }
+.page-count { font-size: 0.75rem; color: var(--text-muted); }
+.search-bar { width: 100%; padding: 0.75rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--neon-green); font-family: var(--font-mono); font-size: 0.8rem; border-radius: 4px; outline: none; margin-bottom: 1rem; transition: border-color 0.3s; }
+.search-bar:focus { border-color: var(--neon-green); box-shadow: 0 0 10px var(--border-glow); }
 .search-bar::placeholder { color: var(--text-muted); }
-
-.filter-bar {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.filter-btn {
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.filter-btn:hover, .filter-btn.active {
-    border-color: var(--neon-green);
-    color: var(--neon-green);
-    background: rgba(0, 255, 65, 0.08);
-}
-
-.scripts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
-}
-
-.script-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.script-card:hover {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 20px var(--border-glow);
-    transform: translateY(-3px);
-}
-
-.script-card-header {
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-}
-
-.script-status {
-    font-size: 0.6rem;
-    padding: 2px 8px;
-    border-radius: 3px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 700;
-}
-
-.status-active { background: rgba(0, 255, 65, 0.15); color: var(--neon-green); border: 1px solid rgba(0, 255, 65, 0.3); }
-.status-testing { background: rgba(232, 255, 0, 0.15); color: var(--neon-yellow); border: 1px solid rgba(232, 255, 0, 0.3); }
-.status-patched { background: rgba(255, 0, 64, 0.15); color: var(--neon-red); border: 1px solid rgba(255, 0, 64, 0.3); }
-
-.script-game-tag {
-    font-size: 0.65rem;
-    color: var(--neon-cyan);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
+.filter-bar { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.filter-btn { padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-radius: 4px; transition: all 0.3s; }
+.filter-btn:hover, .filter-btn.active { border-color: var(--neon-green); color: var(--neon-green); background: rgba(0,255,65,0.08); }
+.scripts-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(350px,1fr)); gap: 1.5rem; }
+.script-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.3s; cursor: pointer; }
+.script-card:hover { border-color: var(--neon-green); box-shadow: 0 0 20px var(--border-glow); transform: translateY(-3px); }
+.script-card-header { padding: 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.script-status { font-size: 0.6rem; padding: 2px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.status-active { background: rgba(0,255,65,0.15); color: var(--neon-green); border: 1px solid rgba(0,255,65,0.3); }
+.status-testing { background: rgba(232,255,0,0.15); color: var(--neon-yellow); border: 1px solid rgba(232,255,0,0.3); }
+.status-patched { background: rgba(255,0,64,0.15); color: var(--neon-red); border: 1px solid rgba(255,0,64,0.3); }
+.script-game-tag { font-size: 0.65rem; color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 1px; }
 .script-card-body { padding: 1.25rem; }
+.script-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+.script-desc { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem; }
+.script-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.meta-badge { font-size: 0.6rem; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.risk-low { background: rgba(0,255,65,0.1); color: var(--neon-green); }
+.risk-medium { background: rgba(232,255,0,0.1); color: var(--neon-yellow); }
+.risk-high { background: rgba(255,0,64,0.1); color: var(--neon-red); }
+.badge-keyless { background: rgba(0,229,255,0.1); color: var(--neon-cyan); }
+.badge-key { background: rgba(180,0,255,0.1); color: var(--neon-purple); }
+.badge-universal { background: rgba(255,102,0,0.1); color: var(--neon-orange); }
+.script-card-footer { padding: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.script-version { font-size: 0.65rem; color: var(--text-muted); }
+.view-code-btn { padding: 0.4rem 1rem; background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-radius: 3px; transition: all 0.3s; }
+.view-code-btn:hover { background: rgba(0,255,65,0.15); box-shadow: 0 0 15px var(--border-glow); }
 
-.script-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 0.5rem;
-}
+/* SCRIPT DETAIL */
+.script-detail { max-width: 900px; margin: 0 auto; padding: 2rem; }
+.back-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; border-radius: 4px; margin-bottom: 2rem; transition: all 0.3s; }
+.back-btn:hover { border-color: var(--neon-green); color: var(--neon-green); }
+.detail-code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 1rem; }
+.detail-code-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); }
+.copy-btn { padding: 0.4rem 1rem; background: var(--neon-green); color: var(--bg-primary); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border: none; border-radius: 3px; cursor: pointer; transition: all 0.3s; }
+.copy-btn:hover { box-shadow: 0 0 15px rgba(0,255,65,0.4); }
+.copy-btn.copied { background: var(--neon-cyan); }
+.detail-code-content { padding: 1.5rem; font-size: 0.8rem; line-height: 1.8; overflow-x: auto; white-space: pre-wrap; color: var(--text-primary); }
+.detail-meta-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: 1rem; margin-top: 1.5rem; }
+.detail-meta-item { padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; }
+.detail-meta-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+.detail-meta-value { font-size: 0.85rem; color: var(--neon-green); font-weight: 600; }
 
-.script-desc {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 1rem;
-}
-
-.script-meta {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.meta-badge {
-    font-size: 0.6rem;
-    padding: 3px 8px;
-    border-radius: 3px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-}
-
-.risk-low { background: rgba(0, 255, 65, 0.1); color: var(--neon-green); }
-.risk-medium { background: rgba(232, 255, 0, 0.1); color: var(--neon-yellow); }
-.risk-high { background: rgba(255, 0, 64, 0.1); color: var(--neon-red); }
-
-.badge-keyless { background: rgba(0, 229, 255, 0.1); color: var(--neon-cyan); }
-.badge-key { background: rgba(180, 0, 255, 0.1); color: var(--neon-purple); }
-.badge-universal { background: rgba(255, 102, 0, 0.1); color: var(--neon-orange); }
-
-.script-card-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.script-version {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-}
-
-.view-code-btn {
-    padding: 0.4rem 1rem;
-    background: transparent;
-    border: 1px solid var(--neon-green);
-    color: var(--neon-green);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    border-radius: 3px;
-    transition: all 0.3s ease;
-}
-
-.view-code-btn:hover {
-    background: rgba(0, 255, 65, 0.15);
-    box-shadow: 0 0 15px var(--border-glow);
-}
-
-/* ========================================
-   SCRIPT DETAIL VIEW
-   ======================================== */
-.script-detail {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-bottom: 2rem;
-    transition: all 0.3s ease;
-}
-
-.back-btn:hover {
-    border-color: var(--neon-green);
-    color: var(--neon-green);
-}
-
-.detail-code-block {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 1rem;
-}
-
-.detail-code-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-bottom: 1px solid var(--border);
-}
-
-.copy-btn {
-    padding: 0.4rem 1rem;
-    background: var(--neon-green);
-    color: var(--bg-primary);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.copy-btn:hover { box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); }
-
-.copy-btn.copied {
-    background: var(--neon-cyan);
-}
-
-.detail-code-content {
-    padding: 1.5rem;
-    font-size: 0.8rem;
-    line-height: 1.8;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    color: var(--text-primary);
-}
-
-.detail-meta-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-.detail-meta-item {
-    padding: 1rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-}
-
-.detail-meta-label {
-    font-size: 0.6rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.4rem;
-}
-
-.detail-meta-value {
-    font-size: 0.85rem;
-    color: var(--neon-green);
-    font-weight: 600;
-}
-
-/* ========================================
-   TERMINAL PAGE
-   ======================================== */
-.terminal-input-bar {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.terminal-input {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--neon-green);
-    color: var(--neon-green);
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    border-radius: 4px;
-    outline: none;
-}
-
-.terminal-input::placeholder { color: rgba(0, 255, 65, 0.3); }
-
-.terminal-enter-btn {
-    padding: 0.75rem 1.5rem;
-    background: var(--neon-green);
-    color: var(--bg-primary);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.terminal-enter-btn:hover {
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
-}
-
-.terminal-file-header {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    padding: 0.75rem 1rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 6px 6px 0 0;
-    margin-bottom: 0;
-    letter-spacing: 1px;
-}
-
-.terminal-list {
-    border: 1px solid var(--border);
-    border-top: none;
-    border-radius: 0 0 6px 6px;
-    overflow: hidden;
-}
-
-.terminal-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
+/* TERMINAL */
+.terminal-input-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.terminal-input { flex: 1; padding: 0.75rem 1rem; background: var(--bg-secondary); border: 1px solid var(--neon-green); color: var(--neon-green); font-family: var(--font-mono); font-size: 0.85rem; border-radius: 4px; outline: none; }
+.terminal-input::placeholder { color: rgba(0,255,65,0.3); }
+.terminal-enter-btn { padding: 0.75rem 1.5rem; background: var(--neon-green); color: var(--bg-primary); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; transition: all 0.3s; }
+.terminal-enter-btn:hover { box-shadow: 0 0 20px rgba(0,255,65,0.4); }
+.terminal-file-header { font-size: 0.7rem; color: var(--text-muted); padding: 0.75rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px 6px 0 0; letter-spacing: 1px; }
+.terminal-list { border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; }
+.terminal-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); transition: all 0.3s; cursor: pointer; }
 .terminal-item:last-child { border-bottom: none; }
-
-.terminal-item:hover {
-    background: rgba(0, 255, 65, 0.05);
-}
-
-.terminal-line-num {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    min-width: 25px;
-}
-
-.terminal-item-title {
-    font-size: 0.85rem;
-    color: #fff;
-    font-weight: 600;
-}
-
-.terminal-item-meta {
-    display: flex;
-    gap: 0.75rem;
-    margin-left: auto;
-    flex-shrink: 0;
-}
-
-.terminal-tag {
-    font-size: 0.6rem;
-    padding: 2px 6px;
-    border-radius: 3px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Legend */
-.terminal-legend {
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-    font-size: 0.7rem;
-    flex-wrap: wrap;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--text-muted);
-}
-
-.legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-
+.terminal-item:hover { background: rgba(0,255,65,0.05); }
+.terminal-line-num { font-size: 0.7rem; color: var(--text-muted); min-width: 25px; }
+.terminal-item-title { font-size: 0.85rem; color: #fff; font-weight: 600; }
+.terminal-item-meta { display: flex; gap: 0.75rem; margin-left: auto; flex-shrink: 0; }
+.terminal-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 1px; }
+.terminal-legend { display: flex; gap: 1.5rem; margin-top: 1.5rem; font-size: 0.7rem; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 0.4rem; color: var(--text-muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 .legend-dot.working { background: var(--neon-green); }
 .legend-dot.patched { background: var(--neon-red); }
 .legend-dot.testing { background: var(--neon-yellow); }
 
-/* ========================================
-   CHANGELOG PAGE
-   ======================================== */
-.changelog-timeline {
-    position: relative;
-    padding-left: 2rem;
-}
+/* CHANGELOG */
+.changelog-timeline { position: relative; padding-left: 2rem; }
+.changelog-timeline::before { content: ''; position: absolute; left: 5px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.changelog-entry { position: relative; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; transition: all 0.3s; }
+.changelog-entry:hover { border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0,229,255,0.1); }
+.changelog-entry::before { content: ''; position: absolute; left: -2rem; top: 1.75rem; width: 12px; height: 12px; border-radius: 50%; background: var(--neon-cyan); border: 2px solid var(--bg-primary); box-shadow: 0 0 10px rgba(0,229,255,0.3); }
+.changelog-date { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+.changelog-type { display: inline-block; font-size: 0.6rem; padding: 2px 8px; border-radius: 3px; background: rgba(0,229,255,0.15); color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; }
+.changelog-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+.changelog-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6; }
 
-.changelog-timeline::before {
-    content: '';
-    position: absolute;
-    left: 5px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--border);
-}
-
-.changelog-entry {
-    position: relative;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.changelog-entry:hover {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
-}
-
-.changelog-entry::before {
-    content: '';
-    position: absolute;
-    left: -2rem;
-    top: 1.75rem;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--neon-cyan);
-    border: 2px solid var(--bg-primary);
-    box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
-}
-
-.changelog-date {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    margin-bottom: 0.5rem;
-}
-
-.changelog-type {
-    display: inline-block;
-    font-size: 0.6rem;
-    padding: 2px 8px;
-    border-radius: 3px;
-    background: rgba(0, 229, 255, 0.15);
-    color: var(--neon-cyan);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.75rem;
-}
-
-.changelog-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 0.5rem;
-}
-
-.changelog-desc {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-
-/* ========================================
-   RULES PAGE
-   ======================================== */
+/* RULES */
 .rules-list { display: flex; flex-direction: column; gap: 0.75rem; }
-
-.rule-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.rule-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.25rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.rule-header:hover { background: rgba(0, 255, 65, 0.03); }
-
-.rule-num-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.rule-num {
-    font-family: var(--font-display);
-    font-size: 0.75rem;
-    font-weight: 700;
-    min-width: 24px;
-}
-
-.rule-title {
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.rule-arrow {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    transition: transform 0.3s ease;
-}
-
+.rule-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.rule-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; cursor: pointer; transition: all 0.3s; }
+.rule-header:hover { background: rgba(0,255,65,0.03); }
+.rule-num-title { display: flex; align-items: center; gap: 0.75rem; }
+.rule-num { font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; min-width: 24px; }
+.rule-title { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.rule-arrow { font-size: 0.75rem; color: var(--text-muted); transition: transform 0.3s; }
 .rule-item.open .rule-arrow { transform: rotate(180deg); }
-
-.rule-content {
-    display: none;
-    padding: 0 1.25rem 1.25rem;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    line-height: 1.8;
-}
-
+.rule-content { display: none; padding: 0 1.25rem 1.25rem; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.8; }
 .rule-item.open .rule-content { display: block; }
+.rule-severity-red .rule-num, .rule-severity-red .rule-title { color: var(--neon-red); }
+.rule-severity-cyan .rule-num, .rule-severity-cyan .rule-title { color: var(--neon-cyan); }
+.rule-severity-green .rule-num, .rule-severity-green .rule-title { color: var(--neon-green); }
+.rule-severity-purple .rule-num, .rule-severity-purple .rule-title { color: var(--neon-purple); }
+.rule-severity-orange .rule-num, .rule-severity-orange .rule-title { color: var(--neon-orange); }
+.rule-severity-yellow .rule-num, .rule-severity-yellow .rule-title { color: var(--neon-yellow); }
 
-.rule-severity-red .rule-num { color: var(--neon-red); }
-.rule-severity-red .rule-title { color: var(--neon-red); }
-.rule-severity-yellow .rule-num { color: var(--neon-yellow); }
-.rule-severity-yellow .rule-title { color: var(--neon-yellow); }
-.rule-severity-cyan .rule-num { color: var(--neon-cyan); }
-.rule-severity-cyan .rule-title { color: var(--neon-cyan); }
-.rule-severity-green .rule-num { color: var(--neon-green); }
-.rule-severity-green .rule-title { color: var(--neon-green); }
-.rule-severity-purple .rule-num { color: var(--neon-purple); }
-.rule-severity-purple .rule-title { color: var(--neon-purple); }
-.rule-severity-orange .rule-num { color: var(--neon-orange); }
-.rule-severity-orange .rule-title { color: var(--neon-orange); }
-
-/* ========================================
-   ABOUT PAGE
-   ======================================== */
-.about-section {
-    margin-bottom: 3rem;
-}
-
-.about-intro {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    line-height: 1.8;
-    max-width: 700px;
-}
-
-.about-subtitle {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--neon-cyan);
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
-}
-
-.about-mission {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    line-height: 1.8;
-    padding: 1.5rem;
-    background: var(--bg-card);
-    border-left: 3px solid var(--neon-green);
-    border-radius: 0 8px 8px 0;
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
-}
-
-.feature-card {
-    padding: 1.5rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.feature-card:hover {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 15px var(--border-glow);
-    transform: translateY(-2px);
-}
-
+/* ABOUT */
+.about-section { margin-bottom: 3rem; }
+.about-intro { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; max-width: 700px; }
+.about-subtitle { font-size: 0.8rem; color: var(--neon-cyan); margin-bottom: 1rem; letter-spacing: 2px; }
+.about-mission { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8; padding: 1.5rem; background: var(--bg-card); border-left: 3px solid var(--neon-green); border-radius: 0 8px 8px 0; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 1.25rem; }
+.feature-card { padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; transition: all 0.3s; }
+.feature-card:hover { border-color: var(--neon-green); box-shadow: 0 0 15px var(--border-glow); transform: translateY(-2px); }
 .feature-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
 .feature-title { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
 .feature-desc { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6; }
+.team-card { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; max-width: 500px; }
+.team-avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg,var(--neon-green),var(--neon-cyan)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; color: var(--bg-primary); flex-shrink: 0; }
+.team-name { font-size: 1rem; font-weight: 700; color: var(--neon-green); }
+.team-role { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+.team-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.5; }
+.discord-cta { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 2rem; background: linear-gradient(135deg,#5865F2,#7289DA); color: #fff; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border-radius: 6px; text-decoration: none; transition: all 0.3s; margin-top: 1rem; }
+.discord-cta:hover { box-shadow: 0 0 25px rgba(88,101,242,0.4); transform: translateY(-2px); }
 
-.team-card {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    max-width: 500px;
-}
+/* UPLOAD FORM */
+.upload-form { max-width: 700px; margin: 0 auto; }
+.form-group { margin-bottom: 1.5rem; }
+.form-label { display: block; font-size: 0.7rem; color: var(--neon-green); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+.form-input, .form-select, .form-textarea { width: 100%; padding: 0.75rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; border-radius: 4px; outline: none; transition: border-color 0.3s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--neon-green); box-shadow: 0 0 10px var(--border-glow); }
+.form-textarea { min-height: 200px; resize: vertical; line-height: 1.6; }
+.form-select { cursor: pointer; }
+.form-select option { background: var(--bg-secondary); color: var(--text-primary); }
+.form-hint { font-size: 0.65rem; color: var(--text-muted); margin-top: 0.25rem; }
+.submit-btn { width: 100%; padding: 1rem; background: var(--neon-green); color: var(--bg-primary); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; border: none; border-radius: 4px; cursor: pointer; transition: all 0.3s; }
+.submit-btn:hover { box-shadow: 0 0 25px rgba(0,255,65,0.4); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.team-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--bg-primary);
-    flex-shrink: 0;
-}
+/* ADMIN */
+.admin-stats { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 1rem; margin-bottom: 2rem; }
+.admin-stat { padding: 1.25rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; text-align: center; }
+.admin-stat-value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: var(--neon-green); }
+.admin-stat-label { font-size: 0.65rem; color: var(--text-muted); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 1px; }
+.pending-card { padding: 1.25rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
+.pending-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+.pending-title { font-size: 1rem; font-weight: 700; color: #fff; }
+.pending-by { font-size: 0.65rem; color: var(--text-muted); }
+.pending-code { padding: 1rem; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 4px; font-size: 0.75rem; color: var(--text-secondary); max-height: 150px; overflow-y: auto; white-space: pre-wrap; margin: 0.75rem 0; }
+.pending-actions { display: flex; gap: 0.75rem; }
+.approve-btn { padding: 0.5rem 1.25rem; background: var(--neon-green); color: var(--bg-primary); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; transition: all 0.3s; }
+.approve-btn:hover { box-shadow: 0 0 15px rgba(0,255,65,0.4); }
+.reject-btn { padding: 0.5rem 1.25rem; background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; border-radius: 4px; cursor: pointer; transition: all 0.3s; }
+.reject-btn:hover { background: rgba(255,0,64,0.15); }
 
-.team-name {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--neon-green);
-}
+/* PROFILE */
+.profile-header { display: flex; align-items: center; gap: 1.5rem; padding: 2rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 2rem; }
+.profile-avatar-lg { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--neon-green); object-fit: cover; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: var(--neon-green); flex-shrink: 0; }
+.profile-name { font-size: 1.25rem; font-weight: 700; color: #fff; }
+.profile-email { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+.profile-joined { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem; }
+.profile-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 2rem; }
 
-.team-role {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    margin-top: 0.25rem;
-}
+/* TOAST */
+.toast { position: fixed; bottom: 50px; right: 20px; padding: 0.75rem 1.5rem; background: var(--bg-secondary); border: 1px solid var(--neon-green); border-radius: 6px; color: var(--neon-green); font-size: 0.8rem; z-index: 3000; opacity: 0; transform: translateY(20px); transition: all 0.3s; box-shadow: 0 0 20px rgba(0,255,65,0.15); }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { border-color: var(--neon-red); color: var(--neon-red); }
 
-.team-desc {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    margin-top: 0.5rem;
-    line-height: 1.5;
-}
+/* VIBE BADGE */
+.vibe-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.25rem; background: linear-gradient(135deg,rgba(180,0,255,0.15),rgba(0,229,255,0.15)); border: 1px solid rgba(180,0,255,0.4); border-radius: 50px; font-size: 0.75rem; font-weight: 600; color: var(--neon-purple); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px rgba(180,0,255,0.4); box-shadow: 0 0 20px rgba(180,0,255,0.1); animation: vibe-pulse 3s ease-in-out infinite; cursor: default; }
+@keyframes vibe-pulse { 0%,100% { box-shadow: 0 0 20px rgba(180,0,255,0.1); } 50% { box-shadow: 0 0 30px rgba(180,0,255,0.25); border-color: rgba(0,229,255,0.5); color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0,229,255,0.4); } }
+.vibe-emoji { font-size: 1rem; }
 
-.discord-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 2rem;
-    background: linear-gradient(135deg, #5865F2, #7289DA);
-    color: #fff;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    margin-top: 1rem;
-}
+/* LOADING */
+.loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--neon-green); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.login-prompt { text-align: center; padding: 4rem 2rem; }
+.login-prompt p { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem; }
 
-.discord-cta:hover {
-    box-shadow: 0 0 25px rgba(88, 101, 242, 0.4);
-    transform: translateY(-2px);
-}
-
-/* ========================================
-   FOOTER
-   ======================================== */
-.footer {
-    padding: 2rem;
-    text-align: center;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    border-top: 1px solid var(--border);
-    margin-top: 4rem;
-}
-
-.footer a {
-    color: var(--neon-green);
-    text-decoration: none;
-}
-
+/* FOOTER */
+.footer { padding: 2rem; text-align: center; font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 4rem; }
+.footer a { color: var(--neon-green); text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
+/* RESPONSIVE */
 @media (max-width: 900px) {
-    .home-hero {
-        grid-template-columns: 1fr;
-        padding: 1.5rem;
-    }
-    
+    .home-hero { grid-template-columns: 1fr; padding: 1.5rem; }
     .hero-title { font-size: 2rem; }
-    
-    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-    
+    .metrics-grid { grid-template-columns: repeat(2,1fr); }
     .scripts-grid { grid-template-columns: 1fr; }
 }
-
 @media (max-width: 768px) {
     .hamburger { display: flex; }
-    
-    .nav-links {
-        display: none;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        background: rgba(10, 10, 15, 0.98);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem;
-        gap: 0.25rem;
-    }
-    
+    .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; flex-direction: column; background: rgba(10,10,15,0.98); border-bottom: 1px solid var(--border); padding: 1rem; gap: 0.25rem; }
     .nav-links.open { display: flex; }
-    
-    .nav-link {
-        padding: 0.75rem 1rem;
-        width: 100%;
-    }
-    
-    .status-bar {
-        gap: 0.75rem;
-        font-size: 0.55rem;
-        padding: 0 0.75rem;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-    }
-    
+    .nav-link { padding: 0.75rem 1rem; width: 100%; }
+    .status-bar { gap: 0.75rem; font-size: 0.55rem; padding: 0 0.75rem; }
     .page-container { padding: 1.5rem; }
-    
-    .hero-title { font-size: 1.75rem; }
-    
-    .metrics-grid { grid-template-columns: 1fr 1fr; }
-    
-    .detail-meta-grid { grid-template-columns: 1fr 1fr; }
-    
     .features-grid { grid-template-columns: 1fr; }
+    .profile-header { flex-direction: column; text-align: center; }
+    .profile-stats { grid-template-columns: 1fr; }
 }
-
 @media (max-width: 480px) {
     .metrics-grid { grid-template-columns: 1fr; }
-    
     .hero-buttons { flex-direction: column; }
-    
     .terminal-input-bar { flex-direction: column; }
-    
-    .script-meta { gap: 0.5rem; }
+    .admin-stats { grid-template-columns: 1fr; }
 }
-
     </style>
 </head>
 <body>
@@ -1395,15 +350,13 @@ body {
             <a onclick="navigate('about')" class="nav-link">About</a>
             <a href="https://discord.gg/MxtngkPNzy" target="_blank" class="nav-link discord-btn">Discord</a>
             <button class="cmd-btn" onclick="toggleCommandPalette()">[CMD]</button>
+            <div id="authArea"></div>
         </div>
     </nav>
     <div class="command-palette" id="commandPalette">
         <div class="cmd-overlay" onclick="toggleCommandPalette()"></div>
         <div class="cmd-modal">
-            <div class="cmd-header">
-                <span class="cmd-label">COMMAND PALETTE</span>
-                <span class="cmd-shortcut">ESC to close</span>
-            </div>
+            <div class="cmd-header"><span class="cmd-label">COMMAND PALETTE</span><span class="cmd-shortcut">ESC to close</span></div>
             <input type="text" class="cmd-input" id="cmdInput" placeholder="Type a command..." oninput="filterCommands(this.value)">
             <div class="cmd-results" id="cmdResults"></div>
         </div>
@@ -1415,553 +368,161 @@ body {
         <div class="status-item version">COMMAND CENTER V4.2.1</div>
     </div>
     <main id="app"></main>
+    <div class="toast" id="toast"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script>
 // ========================================
-// SYNTAX OVERRIDE - Script Data
+// FIREBASE CONFIG & INIT
 // ========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyBU5A2m_6jZYfJBqXEv-rWnxCUJW_HgEIc",
+    authDomain: "syntax-override.firebaseapp.com",
+    projectId: "syntax-override",
+    storageBucket: "syntax-override.firebasestorage.app",
+    messagingSenderId: "458902214597",
+    appId: "1:458902214597:web:986655ac368ff6156f5dac"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const ADMIN_EMAIL = "godscripters@gmail.com";
 
-const SCRIPTS = [
-    {
-        id: 1,
-        title: "Xeno Delta Hub | 180+ Features",
-        game: "Universal",
-        description: "Multi-game script hub with 180+ stacking features. Supports all popular Roblox games.",
-        keyType: "keyless",
-        riskLevel: "medium",
-        version: "2.0.0",
-        status: "active",
-        category: "library",
-        views: 342,
-        code: `-- Xeno Delta Hub | 180+ Features
--- Universal Script Hub
--- Version 2.0.0
-
-local XenoDelta = {}
-XenoDelta.__index = XenoDelta
-
-function XenoDelta.init()
-    local self = setmetatable({}, XenoDelta)
-    self.version = "2.0.0"
-    self.features = 180
-    self.games_supported = "Universal"
-    
-    print("[XENO DELTA] Initializing Hub...")
-    print("[XENO DELTA] Loading " .. self.features .. " features...")
-    
-    self:loadModules()
-    return self
-end
-
-function XenoDelta:loadModules()
-    local modules = {
-        "ESP", "Aimbot", "Speed", "Fly",
-        "Noclip", "Teleport", "AutoFarm",
-        "InfiniteJump", "Godmode", "Reach"
-    }
-    
-    for i, mod in ipairs(modules) do
-        print("[MODULE] Loading: " .. mod)
-        task.wait(0.1)
-    end
-    
-    print("[XENO DELTA] All modules loaded successfully!")
-end
-
-XenoDelta.init()`
-    },
-    {
-        id: 2,
-        title: "Magnus AI Chatbot",
-        game: "Universal",
-        description: "AI-powered chatbot script for in-game conversations. Smart responses with natural language processing.",
-        keyType: "key",
-        riskLevel: "low",
-        version: "1.3.0",
-        status: "active",
-        category: "library",
-        views: 128,
-        code: `-- Magnus AI Chatbot
--- Version 1.3.0
--- Requires Key
-
-local Magnus = {}
-Magnus.version = "1.3.0"
-Magnus.responses = {}
-
-function Magnus:init()
-    print("[MAGNUS] AI Chatbot initializing...")
-    self:loadResponses()
-    self:startListener()
-end
-
-function Magnus:loadResponses()
-    self.responses = {
-        greeting = {"Hello!", "Hey there!", "What's up?"},
-        farewell = {"Goodbye!", "See ya!", "Later!"},
-        help = {"How can I help?", "What do you need?"}
-    }
-    print("[MAGNUS] Response database loaded")
-end
-
-function Magnus:startListener()
-    print("[MAGNUS] Chat listener active")
-    -- Listens for chat messages
-end
-
-Magnus:init()`
-    },
-    {
-        id: 3,
-        title: "Blox Fruits Auto Farm",
-        game: "Blox Fruits",
-        description: "Automated farming script for Blox Fruits. Auto-quest, auto-attack, and fruit collection.",
-        keyType: "keyless",
-        riskLevel: "medium",
-        version: "3.1.0",
-        status: "active",
-        category: "library",
-        views: 567,
-        code: `-- Blox Fruits Auto Farm
--- Version 3.1.0
--- Keyless
-
-local AutoFarm = {
-    active = false,
-    target = nil,
-    quest = nil
-}
-
-function AutoFarm:start()
-    self.active = true
-    print("[AUTOFARM] Starting Blox Fruits farm...")
-    
-    self:findQuest()
-    self:beginLoop()
-end
-
-function AutoFarm:findQuest()
-    print("[AUTOFARM] Searching for nearest quest...")
-    -- Quest detection logic
-    self.quest = "Active Quest Found"
-    print("[AUTOFARM] Quest: " .. self.quest)
-end
-
-function AutoFarm:beginLoop()
-    while self.active do
-        self:findTarget()
-        self:attack()
-        task.wait(0.5)
-    end
-end
-
-function AutoFarm:findTarget()
-    -- Target finding logic
-end
-
-function AutoFarm:attack()
-    -- Attack logic
-end
-
-AutoFarm:start()`
-    },
-    {
-        id: 4,
-        title: "Deadly Auto Farm",
-        game: "Deadly Delivery",
-        description: "Auto farm script for Deadly Delivery. Automatic deliveries and resource collection.",
-        keyType: "key",
-        riskLevel: "high",
-        version: "1.0.0",
-        status: "active",
-        category: "library",
-        views: 89,
-        code: `-- Deadly Auto Farm
--- Deadly Delivery
--- Version 1.0.0
--- Key Required
-
-local DeadlyFarm = {}
-DeadlyFarm.__index = DeadlyFarm
-
-function DeadlyFarm.new()
-    local self = setmetatable({}, DeadlyFarm)
-    self.running = false
-    self.deliveries = 0
-    return self
-end
-
-function DeadlyFarm:start()
-    self.running = true
-    print("[DEADLY] Auto Farm started!")
-    
-    while self.running do
-        self:deliver()
-        self.deliveries = self.deliveries + 1
-        print("[DEADLY] Deliveries: " .. self.deliveries)
-        task.wait(1)
-    end
-end
-
-function DeadlyFarm:deliver()
-    -- Delivery automation logic
-end
-
-local farm = DeadlyFarm.new()
-farm:start()`
-    },
-    {
-        id: 5,
-        title: "Forge Hub | 15+ Games",
-        game: "Universal",
-        description: "Multi-game script hub supporting 15+ popular Roblox games with modular features.",
-        keyType: "key",
-        riskLevel: "medium",
-        version: "1.2.0",
-        status: "active",
-        category: "library",
-        views: 203,
-        code: `-- Forge Hub | 15+ Games
--- Version 1.2.0
--- Key Required
-
-local ForgeHub = {
-    version = "1.2.0",
-    games = {},
-    loaded = false
-}
-
-function ForgeHub:init()
-    print("[FORGE HUB] Loading v" .. self.version)
-    self:loadGames()
-    self.loaded = true
-    print("[FORGE HUB] Ready! " .. #self.games .. " games supported")
-end
-
-function ForgeHub:loadGames()
-    self.games = {
-        "Blox Fruits", "King Legacy",
-        "Pet Simulator X", "Anime Adventures",
-        "Tower Defense Simulator", "Brookhaven",
-        "Murder Mystery 2", "Arsenal",
-        "Jailbreak", "Adopt Me",
-        "Shindo Life", "YBA",
-        "AUT", "GPO", "Bedwars"
-    }
-end
-
-ForgeHub:init()`
-    },
-    {
-        id: 6,
-        title: "Fling All Beta",
-        game: "Universal",
-        description: "Universal fling script. Flings all players in the server. Use responsibly.",
-        keyType: "keyless",
-        riskLevel: "high",
-        version: "0.9.0",
-        status: "active",
-        category: "library",
-        views: 445,
-        code: `-- Fling All Beta
--- Universal
--- Version 0.9.0
-
-local Fling = {
-    power = 500,
-    active = false,
-    targets = {}
-}
-
-function Fling:start()
-    self.active = true
-    print("[FLING] Fling All activated!")
-    print("[FLING] Power: " .. self.power)
-    
-    self:getTargets()
-    self:execute()
-end
-
-function Fling:getTargets()
-    -- Gets all players in server
-    print("[FLING] Scanning for players...")
-end
-
-function Fling:execute()
-    for _, target in ipairs(self.targets) do
-        -- Fling logic
-    end
-    print("[FLING] Execution complete!")
-end
-
-Fling:start()`
-    },
-    {
-        id: 7,
-        title: "Universal Auto Farm",
-        game: "Universal",
-        description: "Works across multiple games. Auto-detects game and applies appropriate farming logic.",
-        keyType: "keyless",
-        riskLevel: "medium",
-        version: "2.1.0",
-        status: "active",
-        category: "terminal",
-        views: 231,
-        code: `-- Universal Auto Farm
--- Version 2.1.0
-
-local UAF = {}
-UAF.version = "2.1.0"
-
-function UAF:detect()
-    local gameId = game.PlaceId
-    print("[UAF] Detecting game: " .. gameId)
-    return gameId
-end
-
-function UAF:start()
-    local id = self:detect()
-    print("[UAF] Auto Farm started for game " .. id)
-end
-
-UAF:start()`
-    },
-    {
-        id: 8,
-        title: "Da Hood Aimbot",
-        game: "Da Hood",
-        description: "Precision aimbot for Da Hood. Auto-aim with customizable FOV and smoothing.",
-        keyType: "keyless",
-        riskLevel: "high",
-        version: "3.0.0",
-        status: "active",
-        category: "terminal",
-        views: 389,
-        code: `-- Da Hood Aimbot
--- Version 3.0.0
-
-local Aimbot = {
-    fov = 120,
-    smoothing = 0.5,
-    active = false
-}
-
-function Aimbot:toggle()
-    self.active = not self.active
-    print("[AIMBOT] " .. (self.active and "ON" or "OFF"))
-end
-
-Aimbot:toggle()`
-    },
-    {
-        id: 9,
-        title: "Blox Fruits Devil Fruit ESP",
-        game: "Blox Fruits",
-        description: "ESP for devil fruits in Blox Fruits. Highlights fruit locations on the map.",
-        keyType: "keyless",
-        riskLevel: "low",
-        version: "1.4.0",
-        status: "active",
-        category: "terminal",
-        views: 276,
-        code: `-- Blox Fruits Devil Fruit ESP
--- Version 1.4.0
-
-local FruitESP = {
-    enabled = true,
-    range = 5000
-}
-
-function FruitESP:scan()
-    print("[ESP] Scanning for Devil Fruits...")
-    print("[ESP] Range: " .. self.range)
-end
-
-FruitESP:scan()`
-    },
-    {
-        id: 10,
-        title: "Prison Life Escape Bot",
-        game: "Prison Life",
-        description: "Automated escape bot for Prison Life. Handles keycard, guns, and escape routes.",
-        keyType: "keyless",
-        riskLevel: "low",
-        version: "1.1.0",
-        status: "active",
-        category: "terminal",
-        views: 154,
-        code: `-- Prison Life Escape Bot
--- Version 1.1.0
-
-local EscapeBot = {
-    phase = "planning",
-    inventory = {}
-}
-
-function EscapeBot:start()
-    print("[ESCAPE] Planning escape...")
-    self.phase = "executing"
-    print("[ESCAPE] Escape in progress!")
-end
-
-EscapeBot:start()`
-    },
-    {
-        id: 11,
-        title: "Speed Hack Module",
-        game: "Universal",
-        description: "Universal speed modification module. Adjustable walk and fly speed.",
-        keyType: "keyless",
-        riskLevel: "medium",
-        version: "2.0.0",
-        status: "testing",
-        category: "terminal",
-        views: 198,
-        code: `-- Speed Hack Module
--- Version 2.0.0
-
-local SpeedHack = {
-    walkSpeed = 50,
-    flySpeed = 100,
-    active = false
-}
-
-function SpeedHack:apply()
-    self.active = true
-    print("[SPEED] Walk: " .. self.walkSpeed)
-    print("[SPEED] Fly: " .. self.flySpeed)
-end
-
-SpeedHack:apply()`
-    }
-];
-
-const CHANGELOG = [
-    {
-        date: "2026-04-27",
-        type: "launch",
-        title: "Platform Launch",
-        description: "Syntax Override officially launched. Script library, terminal, changelog, and rules pages are live."
-    },
-    {
-        date: "2026-04-27",
-        type: "feature",
-        title: "Interactive Terminal Added",
-        description: "New terminal page with Lua command input and script execution preview."
-    },
-    {
-        date: "2026-04-27",
-        type: "feature",
-        title: "Library Search & Filters",
-        description: "Added real-time search and filter system to the script library. Filter by keyless, key, or universal."
-    },
-    {
-        date: "2026-04-27",
-        type: "feature",
-        title: "Script Upload System",
-        description: "Users can now submit scripts for review. Admin approval required before publishing."
-    },
-    {
-        date: "2026-04-27",
-        type: "feature",
-        title: "Copy Code Button",
-        description: "One-click copy to clipboard on all script detail pages."
-    },
-    {
-        date: "2026-04-27",
-        type: "update",
-        title: "Rules & Community Guidelines",
-        description: "Comprehensive community rules added covering spam, NSFW, reposting, key systems, and more."
-    },
-    {
-        date: "2026-04-27",
-        type: "update",
-        title: "UI Overhaul — Cyberpunk Theme",
-        description: "Complete visual redesign with dark cyberpunk aesthetic, neon accents, matrix rain, and terminal styling."
-    },
-    {
-        date: "2026-04-27",
-        type: "feature",
-        title: "About Page & Discord Integration",
-        description: "New About page with platform mission, features, and team info. Discord invite button added to navigation."
-    }
-];
-
-const RULES = [
-    {
-        num: "01",
-        title: "Spam / Low Quality",
-        severity: "red",
-        content: "Do not spam scripts, messages, or low-quality content. Repeated uploads of broken, empty, or placeholder scripts will result in removal and potential ban. Keep all submissions meaningful and tested."
-    },
-    {
-        num: "02",
-        title: "NSFW / Inappropriate Content",
-        severity: "red",
-        content: "Absolutely no NSFW, sexual, or inappropriate content of any kind. This includes scripts, descriptions, usernames, and comments. Zero tolerance policy — immediate permanent ban."
-    },
-    {
-        num: "03",
-        title: "Reposting & Credits",
-        severity: "cyan",
-        content: "Do not repost scripts without proper credit to the original creator. If you modify someone else's script, clearly state it's a fork and credit the original author. Claiming others' work as your own will result in removal and ban."
-    },
-    {
-        num: "04",
-        title: "Key Systems",
-        severity: "green",
-        content: "If your script uses a key system, it must be functional and not misleading. Keys should be obtainable — no impossible tasks, no endless ad loops. Clearly label your script as KEY or KEYLESS."
-    },
-    {
-        num: "05",
-        title: "Scamming & Phishing",
-        severity: "red",
-        content: "No scam links, phishing attempts, IP grabbers, token loggers, or any malicious redirects. Any script containing hidden malicious code will be removed immediately and the uploader permanently banned."
-    },
-    {
-        num: "06",
-        title: "Malware & Backdoors",
-        severity: "red",
-        content: "Scripts must not contain malware, backdoors, RATs, keyloggers, crypto miners, or any code that compromises user security. All scripts are subject to review. If your script requires external HTTP requests, the destination must be disclosed."
-    },
-    {
-        num: "07",
-        title: "Harassment & Toxicity",
-        severity: "orange",
-        content: "Be respectful to all community members. No harassment, bullying, doxxing, threats, or discriminatory behavior. This applies to all interactions on the platform and associated Discord server."
-    },
-    {
-        num: "08",
-        title: "Ban Evasion",
-        severity: "purple",
-        content: "Do not attempt to evade bans by creating alternate accounts. Ban evasion will result in permanent bans across all associated accounts. If you believe your ban was unjust, appeal through the Discord server."
-    },
-    {
-        num: "09",
-        title: "Data & Privacy",
-        severity: "cyan",
-        content: "Scripts that collect user data must disclose what data is collected, how it's used, and where it's stored. Any script that silently logs or transmits user data without disclosure will be removed. User privacy is paramount."
-    }
-];
-
-const COMMANDS = [
-    { icon: "📚", label: "Go to Library", action: () => navigate('library') },
-    { icon: "💻", label: "Go to Terminal", action: () => navigate('terminal') },
-    { icon: "📋", label: "Go to Changelog", action: () => navigate('changelog') },
-    { icon: "📜", label: "Go to Rules", action: () => navigate('rules') },
-    { icon: "ℹ️", label: "Go to About", action: () => navigate('about') },
-    { icon: "🏠", label: "Go Home", action: () => navigate('home') },
-    { icon: "💬", label: "Open Discord", action: () => window.open('https://discord.gg/MxtngkPNzy', '_blank') },
-    { icon: "🔍", label: "Search Scripts", action: () => { navigate('library'); setTimeout(() => document.querySelector('.search-bar')?.focus(), 100); } },
-];
-
-
-// ========================================
-// SYNTAX OVERRIDE - Main Application
-// ========================================
-
+let currentUser = null;
+let isAdmin = false;
 let currentPage = 'home';
 let currentFilter = 'all';
 let searchQuery = '';
+let firestoreScripts = [];
+
+// ========================================
+// STATIC DATA
+// ========================================
+const SCRIPTS = [
+    { id: "s1", title: "Xeno Delta Hub | 180+ Features", game: "Universal", description: "Multi-game script hub with 180+ stacking features.", keyType: "keyless", riskLevel: "medium", version: "2.0.0", status: "active", category: "library", views: 342, code: "-- Xeno Delta Hub | 180+ Features\n-- Universal Script Hub v2.0.0\n\nlocal XenoDelta = {}\nXenoDelta.__index = XenoDelta\n\nfunction XenoDelta.init()\n    local self = setmetatable({}, XenoDelta)\n    self.version = \"2.0.0\"\n    self.features = 180\n    print(\"[XENO DELTA] Initializing Hub...\")\n    print(\"[XENO DELTA] Loading \" .. self.features .. \" features...\")\n    self:loadModules()\n    return self\nend\n\nfunction XenoDelta:loadModules()\n    local modules = {\"ESP\",\"Aimbot\",\"Speed\",\"Fly\",\"Noclip\",\"Teleport\",\"AutoFarm\"}\n    for i, mod in ipairs(modules) do\n        print(\"[MODULE] Loading: \" .. mod)\n        task.wait(0.1)\n    end\n    print(\"[XENO DELTA] All modules loaded!\")\nend\n\nXenoDelta.init()" },
+    { id: "s2", title: "Magnus AI Chatbot", game: "Universal", description: "AI-powered chatbot for in-game conversations.", keyType: "key", riskLevel: "low", version: "1.3.0", status: "active", category: "library", views: 128, code: "-- Magnus AI Chatbot v1.3.0\n-- Requires Key\n\nlocal Magnus = {}\nMagnus.version = \"1.3.0\"\n\nfunction Magnus:init()\n    print(\"[MAGNUS] AI Chatbot initializing...\")\n    self:loadResponses()\nend\n\nfunction Magnus:loadResponses()\n    self.responses = {\n        greeting = {\"Hello!\", \"Hey there!\"},\n        farewell = {\"Goodbye!\", \"See ya!\"}\n    }\n    print(\"[MAGNUS] Response database loaded\")\nend\n\nMagnus:init()" },
+    { id: "s3", title: "Blox Fruits Auto Farm", game: "Blox Fruits", description: "Automated farming. Auto-quest, auto-attack, fruit collection.", keyType: "keyless", riskLevel: "medium", version: "3.1.0", status: "active", category: "library", views: 567, code: "-- Blox Fruits Auto Farm v3.1.0\n\nlocal AutoFarm = { active = false }\n\nfunction AutoFarm:start()\n    self.active = true\n    print(\"[AUTOFARM] Starting Blox Fruits farm...\")\n    self:findQuest()\nend\n\nfunction AutoFarm:findQuest()\n    print(\"[AUTOFARM] Searching for nearest quest...\")\nend\n\nAutoFarm:start()" },
+    { id: "s4", title: "Deadly Auto Farm", game: "Deadly Delivery", description: "Auto farm for Deadly Delivery. Auto deliveries and resources.", keyType: "key", riskLevel: "high", version: "1.0.0", status: "active", category: "library", views: 89, code: "-- Deadly Auto Farm v1.0.0\n-- Key Required\n\nlocal DeadlyFarm = {}\nDeadlyFarm.__index = DeadlyFarm\n\nfunction DeadlyFarm.new()\n    local self = setmetatable({}, DeadlyFarm)\n    self.running = false\n    self.deliveries = 0\n    return self\nend\n\nfunction DeadlyFarm:start()\n    self.running = true\n    print(\"[DEADLY] Auto Farm started!\")\nend\n\nlocal farm = DeadlyFarm.new()\nfarm:start()" },
+    { id: "s5", title: "Forge Hub | 15+ Games", game: "Universal", description: "Multi-game script hub supporting 15+ popular games.", keyType: "key", riskLevel: "medium", version: "1.2.0", status: "active", category: "library", views: 203, code: "-- Forge Hub v1.2.0\n-- Key Required\n\nlocal ForgeHub = { version = \"1.2.0\", games = {} }\n\nfunction ForgeHub:init()\n    print(\"[FORGE HUB] Loading v\" .. self.version)\n    self:loadGames()\n    print(\"[FORGE HUB] Ready! \" .. #self.games .. \" games\")\nend\n\nfunction ForgeHub:loadGames()\n    self.games = {\"Blox Fruits\",\"King Legacy\",\"Pet Sim X\",\"Arsenal\",\"Jailbreak\"}\nend\n\nForgeHub:init()" },
+    { id: "s6", title: "Fling All Beta", game: "Universal", description: "Universal fling script. Use responsibly.", keyType: "keyless", riskLevel: "high", version: "0.9.0", status: "active", category: "library", views: 445, code: "-- Fling All Beta v0.9.0\n\nlocal Fling = { power = 500, active = false }\n\nfunction Fling:start()\n    self.active = true\n    print(\"[FLING] Fling All activated!\")\n    print(\"[FLING] Power: \" .. self.power)\nend\n\nFling:start()" },
+    { id: "s7", title: "Universal Auto Farm", game: "Universal", description: "Auto-detects game and applies farming logic.", keyType: "keyless", riskLevel: "medium", version: "2.1.0", status: "active", category: "terminal", views: 231, code: "-- Universal Auto Farm v2.1.0\n\nlocal UAF = {}\nUAF.version = \"2.1.0\"\n\nfunction UAF:detect()\n    local gameId = game.PlaceId\n    print(\"[UAF] Detecting game: \" .. gameId)\n    return gameId\nend\n\nfunction UAF:start()\n    local id = self:detect()\n    print(\"[UAF] Auto Farm started for game \" .. id)\nend\n\nUAF:start()" },
+    { id: "s8", title: "Da Hood Aimbot", game: "Da Hood", description: "Precision aimbot with customizable FOV.", keyType: "keyless", riskLevel: "high", version: "3.0.0", status: "active", category: "terminal", views: 389, code: "-- Da Hood Aimbot v3.0.0\n\nlocal Aimbot = { fov = 120, smoothing = 0.5, active = false }\n\nfunction Aimbot:toggle()\n    self.active = not self.active\n    print(\"[AIMBOT] \" .. (self.active and \"ON\" or \"OFF\"))\nend\n\nAimbot:toggle()" },
+    { id: "s9", title: "Blox Fruits Devil Fruit ESP", game: "Blox Fruits", description: "ESP highlighting fruit locations on the map.", keyType: "keyless", riskLevel: "low", version: "1.4.0", status: "active", category: "terminal", views: 276, code: "-- Blox Fruits Devil Fruit ESP v1.4.0\n\nlocal FruitESP = { enabled = true, range = 5000 }\n\nfunction FruitESP:scan()\n    print(\"[ESP] Scanning for Devil Fruits...\")\n    print(\"[ESP] Range: \" .. self.range)\nend\n\nFruitESP:scan()" },
+    { id: "s10", title: "Prison Life Escape Bot", game: "Prison Life", description: "Automated escape bot. Handles keycard and routes.", keyType: "keyless", riskLevel: "low", version: "1.1.0", status: "active", category: "terminal", views: 154, code: "-- Prison Life Escape Bot v1.1.0\n\nlocal EscapeBot = { phase = \"planning\" }\n\nfunction EscapeBot:start()\n    print(\"[ESCAPE] Planning escape...\")\n    self.phase = \"executing\"\n    print(\"[ESCAPE] Escape in progress!\")\nend\n\nEscapeBot:start()" },
+    { id: "s11", title: "Speed Hack Module", game: "Universal", description: "Adjustable walk and fly speed.", keyType: "keyless", riskLevel: "medium", version: "2.0.0", status: "testing", category: "terminal", views: 198, code: "-- Speed Hack Module v2.0.0\n\nlocal SpeedHack = { walkSpeed = 50, flySpeed = 100 }\n\nfunction SpeedHack:apply()\n    print(\"[SPEED] Walk: \" .. self.walkSpeed)\n    print(\"[SPEED] Fly: \" .. self.flySpeed)\nend\n\nSpeedHack:apply()" }
+];
+
+const CHANGELOG = [
+    { date: "2026-04-27", type: "launch", title: "Platform Launch", description: "Syntax Override officially launched with script library, terminal, and rules." },
+    { date: "2026-04-27", type: "feature", title: "Interactive Terminal Added", description: "Terminal page with Lua command input and script execution preview." },
+    { date: "2026-04-27", type: "feature", title: "Library Search & Filters", description: "Real-time search and filter system. Filter by keyless, key, or universal." },
+    { date: "2026-04-27", type: "feature", title: "Script Upload System", description: "Users can submit scripts for review. Admin approval required." },
+    { date: "2026-04-27", type: "feature", title: "Copy Code Button", description: "One-click copy to clipboard on all script detail pages." },
+    { date: "2026-04-27", type: "feature", title: "Firebase Integration", description: "Real-time database, Google sign-in, user profiles, and admin dashboard." },
+    { date: "2026-04-27", type: "update", title: "UI Overhaul - Cyberpunk Theme", description: "Complete visual redesign with dark cyberpunk aesthetic and neon accents." },
+    { date: "2026-04-27", type: "feature", title: "About Page & Discord", description: "About page with platform mission, features, team info, and Discord invite." }
+];
+
+const RULES = [
+    { num: "01", title: "Spam / Low Quality", severity: "red", content: "Do not spam scripts or low-quality content. Broken, empty, or placeholder scripts will be removed. Keep all submissions meaningful and tested." },
+    { num: "02", title: "NSFW / Inappropriate Content", severity: "red", content: "No NSFW, sexual, or inappropriate content. Includes scripts, descriptions, usernames, and comments. Zero tolerance - immediate permanent ban." },
+    { num: "03", title: "Reposting & Credits", severity: "cyan", content: "Do not repost scripts without credit. If you modify someone's script, state it's a fork and credit the original author." },
+    { num: "04", title: "Key Systems", severity: "green", content: "Key systems must be functional and not misleading. Keys should be obtainable. Clearly label scripts as KEY or KEYLESS." },
+    { num: "05", title: "Scamming & Phishing", severity: "red", content: "No scam links, phishing, IP grabbers, or token loggers. Malicious scripts = immediate permanent ban." },
+    { num: "06", title: "Malware & Backdoors", severity: "red", content: "No malware, backdoors, RATs, keyloggers, or crypto miners. External HTTP requests must be disclosed." },
+    { num: "07", title: "Harassment & Toxicity", severity: "orange", content: "Be respectful. No harassment, bullying, doxxing, threats, or discriminatory behavior." },
+    { num: "08", title: "Ban Evasion", severity: "purple", content: "Do not create alt accounts to evade bans. Appeal through Discord if you believe your ban was unjust." },
+    { num: "09", title: "Data & Privacy", severity: "cyan", content: "Scripts collecting user data must disclose what, how, and where. Silent data logging = removal." }
+];
+
+const COMMANDS = [
+    { icon: "📚", label: "Go to Library", page: "library" },
+    { icon: "💻", label: "Go to Terminal", page: "terminal" },
+    { icon: "📤", label: "Upload Script", page: "upload" },
+    { icon: "📋", label: "Go to Changelog", page: "changelog" },
+    { icon: "📜", label: "Go to Rules", page: "rules" },
+    { icon: "ℹ️", label: "Go to About", page: "about" },
+    { icon: "🏠", label: "Go Home", page: "home" },
+    { icon: "💬", label: "Open Discord", page: "_discord" },
+    { icon: "🔍", label: "Search Scripts", page: "_search" }
+];
+
+
+// ========================================
+// AUTH
+// ========================================
+function loginWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(function(err) {
+        showToast('Login failed: ' + err.message, true);
+    });
+}
+
+function logout() {
+    auth.signOut();
+    closeDropdown();
+}
+
+function closeDropdown() {
+    var dd = document.getElementById('userDropdown');
+    if (dd) dd.classList.remove('open');
+}
+
+auth.onAuthStateChanged(function(user) {
+    currentUser = user;
+    isAdmin = user && user.email === ADMIN_EMAIL;
+    updateAuthUI();
+    if (user) {
+        db.collection('users').doc(user.uid).set({
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    }
+});
+
+function updateAuthUI() {
+    var authArea = document.getElementById('authArea');
+    if (!authArea) return;
+    if (currentUser) {
+        var initial = (currentUser.displayName || currentUser.email || '?')[0].toUpperCase();
+        var photoHtml = currentUser.photoURL
+            ? '<img src="' + currentUser.photoURL + '" class="user-avatar" onclick="toggleDropdown()">'
+            : '<div class="user-avatar" onclick="toggleDropdown()">' + initial + '</div>';
+        var adminItem = isAdmin ? '<div class="dropdown-item admin" onclick="navigate(\'admin\'); closeDropdown();">🛡️ Admin Panel</div><div class="dropdown-divider"></div>' : '';
+        authArea.innerHTML = '<div class="user-menu">' + photoHtml +
+            '<div class="user-dropdown" id="userDropdown">' +
+            '<div class="dropdown-item" onclick="navigate(\'profile\'); closeDropdown();">👤 Profile</div>' +
+            '<div class="dropdown-item" onclick="navigate(\'upload\'); closeDropdown();">📤 Upload Script</div>' +
+            adminItem +
+            '<div class="dropdown-item" onclick="logout()">🚪 Logout</div>' +
+            '</div></div>';
+    } else {
+        authArea.innerHTML = '<button class="auth-btn" onclick="loginWithGoogle()">LOGIN</button>';
+    }
+}
+
+function toggleDropdown() {
+    var dd = document.getElementById('userDropdown');
+    if (dd) dd.classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.user-menu')) closeDropdown();
+});
+
+// ========================================
+// TOAST
+// ========================================
+function showToast(msg, isError) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(function() { t.className = 'toast'; }, 3000);
+}
 
 // ========================================
 // NAVIGATION
@@ -1969,680 +530,591 @@ let searchQuery = '';
 function navigate(page, data) {
     currentPage = page;
     window.scrollTo(0, 0);
-    
-    // Update active nav link
-    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-    const links = document.querySelectorAll('.nav-link');
-    links.forEach(link => {
-        if (link.textContent.toLowerCase().trim() === page) {
-            link.classList.add('active');
-        }
+    document.querySelectorAll('.nav-link').forEach(function(l) { l.classList.remove('active'); });
+    var links = document.querySelectorAll('.nav-link');
+    links.forEach(function(link) {
+        if (link.textContent.toLowerCase().trim() === page) link.classList.add('active');
     });
-    
-    // Close mobile menu
-    document.getElementById('navLinks')?.classList.remove('open');
-    
+    var navLinks = document.getElementById('navLinks');
+    if (navLinks) navLinks.classList.remove('open');
     render(data);
 }
 
 function toggleMenu() {
-    document.getElementById('navLinks')?.classList.toggle('open');
+    var n = document.getElementById('navLinks');
+    if (n) n.classList.toggle('open');
 }
 
 // ========================================
 // COMMAND PALETTE
 // ========================================
 function toggleCommandPalette() {
-    const palette = document.getElementById('commandPalette');
-    palette.classList.toggle('open');
-    if (palette.classList.contains('open')) {
-        const input = document.getElementById('cmdInput');
-        input.value = '';
-        input.focus();
+    var p = document.getElementById('commandPalette');
+    p.classList.toggle('open');
+    if (p.classList.contains('open')) {
+        var inp = document.getElementById('cmdInput');
+        inp.value = '';
+        inp.focus();
         renderCommands(COMMANDS);
     }
 }
 
-function filterCommands(query) {
-    const filtered = COMMANDS.filter(cmd => 
-        cmd.label.toLowerCase().includes(query.toLowerCase())
-    );
+function filterCommands(q) {
+    var filtered = COMMANDS.filter(function(c) { return c.label.toLowerCase().includes(q.toLowerCase()); });
     renderCommands(filtered);
 }
 
-function renderCommands(commands) {
-    const container = document.getElementById('cmdResults');
-    container.innerHTML = commands.map(cmd => `
-        <div class="cmd-item" onclick="(${cmd.action.toString()})(); toggleCommandPalette();">
-            <span class="cmd-item-icon">${cmd.icon}</span>
-            <span>${cmd.label}</span>
-        </div>
-    `).join('');
+function renderCommands(cmds) {
+    var container = document.getElementById('cmdResults');
+    container.innerHTML = cmds.map(function(c) {
+        return '<div class="cmd-item" onclick="runCommand(\'' + c.page + '\')">' +
+            '<span class="cmd-item-icon">' + c.icon + '</span><span>' + c.label + '</span></div>';
+    }).join('');
 }
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
-        e.preventDefault();
-        toggleCommandPalette();
-    }
-    if (e.key === 'Escape') {
-        document.getElementById('commandPalette').classList.remove('open');
-    }
+function runCommand(page) {
+    toggleCommandPalette();
+    if (page === '_discord') { window.open('https://discord.gg/MxtngkPNzy', '_blank'); return; }
+    if (page === '_search') { navigate('library'); setTimeout(function() { var s = document.querySelector('.search-bar'); if (s) s.focus(); }, 100); return; }
+    navigate(page);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) { e.preventDefault(); toggleCommandPalette(); }
+    if (e.key === 'Escape') document.getElementById('commandPalette').classList.remove('open');
 });
 
 // ========================================
 // MATRIX RAIN
 // ========================================
 function initMatrix() {
-    const canvas = document.getElementById('matrix-canvas');
-    const ctx = canvas.getContext('2d');
-    
+    var canvas = document.getElementById('matrix-canvas');
+    var ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    
-    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
-    const fontSize = 14;
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops = Array(columns).fill(1);
-    
+    var chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789';
+    var fontSize = 14;
+    var columns = Math.floor(canvas.width / fontSize);
+    var drops = [];
+    for (var i = 0; i < columns; i++) drops[i] = 1;
     function draw() {
-        ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+        ctx.fillStyle = 'rgba(10,10,15,0.05)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
         ctx.fillStyle = '#00ff41';
         ctx.font = fontSize + 'px monospace';
-        
-        for (let i = 0; i < drops.length; i++) {
-            const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        for (var i = 0; i < drops.length; i++) {
+            var text = chars.charAt(Math.floor(Math.random() * chars.length));
             ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                drops[i] = 0;
-            }
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
         }
     }
-    
     setInterval(draw, 50);
-    
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
+    window.addEventListener('resize', function() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 }
 
 // ========================================
-// STATUS BAR ANIMATION
+// STATUS BAR
 // ========================================
 function animateStatusBar() {
-    setInterval(() => {
-        const latency = Math.floor(Math.random() * 8) + 8;
-        const el = document.getElementById('latencyValue');
-        if (el) el.textContent = latency + 'ms';
+    setInterval(function() {
+        var lat = Math.floor(Math.random() * 8) + 8;
+        var el = document.getElementById('latencyValue');
+        if (el) el.textContent = lat + 'ms';
     }, 2000);
+}
+
+// ========================================
+// FIRESTORE
+// ========================================
+function loadFirestoreScripts() {
+    return db.collection('scripts').orderBy('createdAt', 'desc').get().then(function(snap) {
+        firestoreScripts = [];
+        snap.forEach(function(doc) {
+            var d = doc.data();
+            d.id = 'fb_' + doc.id;
+            d.firebaseId = doc.id;
+            d.isFirebase = true;
+            firestoreScripts.push(d);
+        });
+        return firestoreScripts;
+    }).catch(function() { return []; });
+}
+
+function getAllScripts() {
+    return SCRIPTS.concat(firestoreScripts);
+}
+
+function submitScript(formData) {
+    if (!currentUser) { showToast('You must be logged in', true); return Promise.reject(); }
+    return db.collection('pending').add({
+        title: formData.title,
+        game: formData.game,
+        description: formData.description,
+        code: formData.code,
+        keyType: formData.keyType,
+        riskLevel: formData.riskLevel,
+        category: formData.category,
+        version: '1.0.0',
+        status: 'active',
+        views: 0,
+        submittedBy: currentUser.displayName || currentUser.email,
+        submittedByUid: currentUser.uid,
+        submittedByEmail: currentUser.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function() {
+        showToast('Script submitted for review!');
+        navigate('library');
+    });
+}
+
+function approveScript(pendingId) {
+    return db.collection('pending').doc(pendingId).get().then(function(doc) {
+        if (!doc.exists) return;
+        var data = doc.data();
+        delete data.submittedByUid;
+        delete data.submittedByEmail;
+        return db.collection('scripts').add(data).then(function() {
+            return db.collection('pending').doc(pendingId).delete();
+        });
+    }).then(function() {
+        showToast('Script approved!');
+        loadFirestoreScripts().then(function() { navigate('admin'); });
+    });
+}
+
+function rejectScript(pendingId) {
+    return db.collection('pending').doc(pendingId).delete().then(function() {
+        showToast('Script rejected');
+        navigate('admin');
+    });
+}
+
+function incrementViews(scriptId) {
+    if (scriptId.startsWith && scriptId.startsWith('fb_')) {
+        var fbId = scriptId.replace('fb_', '');
+        db.collection('scripts').doc(fbId).update({
+            views: firebase.firestore.FieldValue.increment(1)
+        }).catch(function() {});
+    }
+}
+
+// ========================================
+// HELPERS
+// ========================================
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function copyCode(btn, scriptId) {
+    var all = getAllScripts();
+    var script = all.find(function(s) { return s.id === scriptId; });
+    if (!script) return;
+    navigator.clipboard.writeText(script.code).then(function() {
+        btn.textContent = 'COPIED!';
+        btn.classList.add('copied');
+        setTimeout(function() { btn.textContent = 'COPY CODE'; btn.classList.remove('copied'); }, 2000);
+    }).catch(function() {
+        var ta = document.createElement('textarea');
+        ta.value = script.code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'COPIED!';
+        btn.classList.add('copied');
+        setTimeout(function() { btn.textContent = 'COPY CODE'; btn.classList.remove('copied'); }, 2000);
+    });
 }
 
 // ========================================
 // RENDER ENGINE
 // ========================================
 function render(data) {
-    const app = document.getElementById('app');
-    
+    var app = document.getElementById('app');
     switch (currentPage) {
         case 'home': app.innerHTML = renderHome(); break;
-        case 'library': app.innerHTML = renderLibrary(); break;
-        case 'terminal': app.innerHTML = renderTerminal(); break;
+        case 'library': loadFirestoreScripts().then(function() { app.innerHTML = renderLibrary(); }); return;
+        case 'terminal': loadFirestoreScripts().then(function() { app.innerHTML = renderTerminal(); }); return;
         case 'changelog': app.innerHTML = renderChangelog(); break;
         case 'rules': app.innerHTML = renderRules(); break;
         case 'about': app.innerHTML = renderAbout(); break;
+        case 'upload': app.innerHTML = renderUpload(); break;
+        case 'admin': app.innerHTML = renderAdmin(); loadAdminData(); return;
+        case 'profile': app.innerHTML = renderProfile(); loadProfileData(); return;
         case 'script-detail': app.innerHTML = renderScriptDetail(data); break;
         default: app.innerHTML = renderHome();
     }
+    updateAuthUI();
+}
+
+function makeFooter() {
+    return '<div class="footer">&copy; 2026 Syntax Override &middot; Built by +1 aura &middot; <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a> &middot; <span class="vibe-badge" style="font-size:0.6rem;padding:0.25rem 0.75rem;"><span class="vibe-emoji" style="font-size:0.7rem;">✨</span> VIBE CODED</span></div>';
 }
 
 // ========================================
-// HOME PAGE
+// HOME
 // ========================================
 function renderHome() {
-    return `
-        <section class="home-hero">
-            <div class="code-editor">
-                <div class="editor-header">
-                    <div class="editor-dots">
-                        <span class="dot-red"></span>
-                        <span class="dot-yellow"></span>
-                        <span class="dot-green"></span>
-                    </div>
-                    <span class="editor-title">hook_module.lua</span>
-                    <span class="editor-badge">LIVE</span>
-                </div>
-                <div class="editor-code">
-                    <div class="code-line"><span class="line-num">1</span><span class="code-content"><span class="cm">-- SYNTAX_OVERRIDE :: HOOK_MODULE</span></span></div>
-                    <div class="code-line"><span class="line-num">2</span><span class="code-content"><span class="cm">-- version: 4.2.1 | status: ACTIVE</span></span></div>
-                    <div class="code-line"><span class="line-num">3</span><span class="code-content"></span></div>
-                    <div class="code-line"><span class="line-num">4</span><span class="code-content"><span class="kw">local</span> <span class="var">SyntaxOverride</span> = {}</span></div>
-                    <div class="code-line"><span class="line-num">5</span><span class="code-content"><span class="var">SyntaxOverride</span>.__index = <span class="var">SyntaxOverride</span></span></div>
-                    <div class="code-line"><span class="line-num">6</span><span class="code-content"></span></div>
-                    <div class="code-line"><span class="line-num">7</span><span class="code-content"><span class="kw">function</span> <span class="fn">SyntaxOverride.init</span>(config)</span></div>
-                    <div class="code-line"><span class="line-num">8</span><span class="code-content">    <span class="kw">local</span> <span class="var">self</span> = <span class="fn">setmetatable</span>({}, <span class="var">SyntaxOverride</span>)</span></div>
-                    <div class="code-line"><span class="line-num">9</span><span class="code-content">    <span class="var">self</span>.bypass = <span class="fn">require</span>(<span class="str">"bypass_engine"</span>)</span></div>
-                    <div class="code-line"><span class="line-num">10</span><span class="code-content">    <span class="var">self</span>.stealth = <span class="kw">true</span></span></div>
-                    <div class="code-line"><span class="line-num">11</span><span class="code-content">    <span class="var">self</span>.version = <span class="str">"4.2.1"</span></span></div>
-                    <div class="code-line"><span class="line-num">12</span><span class="code-content"></span></div>
-                    <div class="code-line"><span class="line-num">13</span><span class="code-content">    <span class="fn">print</span>(<span class="str">"[SYNTAX] Override initialized"</span>)</span></div>
-                    <div class="code-line"><span class="line-num">14</span><span class="code-content">    <span class="fn">print</span>(<span class="str">"[SYNTAX] Stealth mode: ACTIVE"</span>)</span></div>
-                    <div class="code-line"><span class="line-num">15</span><span class="code-content">    <span class="kw">return</span> <span class="var">self</span></span></div>
-                    <div class="code-line"><span class="line-num">16</span><span class="code-content"><span class="kw">end</span></span></div>
-                    <div class="code-line"><span class="line-num">17</span><span class="code-content"></span></div>
-                    <div class="code-line"><span class="line-num">18</span><span class="code-content"><span class="var">SyntaxOverride</span>.<span class="fn">init</span>()</span></div>
-                </div>
-            </div>
-            <div class="hero-content">
-                <span class="hero-label">// COMMAND CENTER V4.2.1</span>
-                <h1 class="hero-title">SYNTAX<br>OVERRIDE</h1>
-                <p class="hero-desc">Advanced Lua engineering platform for the Roblox ecosystem. Precision-crafted scripts with stealth execution, bypass modules, and real-time injection protocols.</p>
-                <div class="hero-buttons">
-                    <button class="btn-primary" onclick="navigate('library')">BROWSE LIBRARY</button>
-                    <button class="btn-secondary" onclick="navigate('terminal')">OPEN TERMINAL</button>
-                </div>
-                <span class="hero-shortcut">PRESS [/] TO OPEN COMMAND PALETTE</span>
-            </div>
-        </section>
-
-        <section class="metrics-section">
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-value">1,402</div>
-                    <div class="metric-label">Active Scripts</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">99.2%</div>
-                    <div class="metric-label">Bypass Rate</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">12ms</div>
-                    <div class="metric-label">Avg Latency</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">0.01%</div>
-                    <div class="metric-label">Detection Rate</div>
-                </div>
-            </div>
-        </section>
-
-        <section class="protocol-section">
-            <h2 class="section-title">// EXECUTION PROTOCOL</h2>
-            <div class="protocol-steps">
-                <div class="protocol-step">
-                    <span class="step-num">01</span>
-                    <div>
-                        <div class="step-title">SELECT</div>
-                        <div class="step-desc">Browse the script library and select your target module. Filter by game, risk level, or key type.</div>
-                    </div>
-                </div>
-                <div class="protocol-step">
-                    <span class="step-num">02</span>
-                    <div>
-                        <div class="step-title">CONFIGURE</div>
-                        <div class="step-desc">Review the script code, check version compatibility, and configure execution parameters.</div>
-                    </div>
-                </div>
-                <div class="protocol-step">
-                    <span class="step-num">03</span>
-                    <div>
-                        <div class="step-title">DEPLOY</div>
-                        <div class="step-desc">Copy the script to your executor and deploy. Real-time status monitoring available in the terminal.</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div class="footer">
-            &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
-            <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
-        </div>
-    `;
+    return '<section class="home-hero">' +
+        '<div class="code-editor"><div class="editor-header"><div class="editor-dots"><span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span></div><span class="editor-title">hook_module.lua</span><span class="editor-badge">LIVE</span></div>' +
+        '<div class="editor-code">' +
+        '<div class="code-line"><span class="line-num">1</span><span class="code-content"><span class="cm">-- SYNTAX_OVERRIDE :: HOOK_MODULE</span></span></div>' +
+        '<div class="code-line"><span class="line-num">2</span><span class="code-content"><span class="cm">-- version: 4.2.1 | status: ACTIVE</span></span></div>' +
+        '<div class="code-line"><span class="line-num">3</span><span class="code-content"></span></div>' +
+        '<div class="code-line"><span class="line-num">4</span><span class="code-content"><span class="kw">local</span> <span class="var">SyntaxOverride</span> = {}</span></div>' +
+        '<div class="code-line"><span class="line-num">5</span><span class="code-content"><span class="var">SyntaxOverride</span>.__index = <span class="var">SyntaxOverride</span></span></div>' +
+        '<div class="code-line"><span class="line-num">6</span><span class="code-content"></span></div>' +
+        '<div class="code-line"><span class="line-num">7</span><span class="code-content"><span class="kw">function</span> <span class="fn">SyntaxOverride.init</span>(config)</span></div>' +
+        '<div class="code-line"><span class="line-num">8</span><span class="code-content">    <span class="kw">local</span> <span class="var">self</span> = <span class="fn">setmetatable</span>({}, <span class="var">SyntaxOverride</span>)</span></div>' +
+        '<div class="code-line"><span class="line-num">9</span><span class="code-content">    <span class="var">self</span>.bypass = <span class="fn">require</span>(<span class="str">"bypass_engine"</span>)</span></div>' +
+        '<div class="code-line"><span class="line-num">10</span><span class="code-content">    <span class="var">self</span>.stealth = <span class="kw">true</span></span></div>' +
+        '<div class="code-line"><span class="line-num">11</span><span class="code-content">    <span class="var">self</span>.version = <span class="str">"4.2.1"</span></span></div>' +
+        '<div class="code-line"><span class="line-num">12</span><span class="code-content"></span></div>' +
+        '<div class="code-line"><span class="line-num">13</span><span class="code-content">    <span class="fn">print</span>(<span class="str">"[SYNTAX] Override initialized"</span>)</span></div>' +
+        '<div class="code-line"><span class="line-num">14</span><span class="code-content">    <span class="fn">print</span>(<span class="str">"[SYNTAX] Stealth mode: ACTIVE"</span>)</span></div>' +
+        '<div class="code-line"><span class="line-num">15</span><span class="code-content">    <span class="kw">return</span> <span class="var">self</span></span></div>' +
+        '<div class="code-line"><span class="line-num">16</span><span class="code-content"><span class="kw">end</span></span></div>' +
+        '<div class="code-line"><span class="line-num">17</span><span class="code-content"></span></div>' +
+        '<div class="code-line"><span class="line-num">18</span><span class="code-content"><span class="var">SyntaxOverride</span>.<span class="fn">init</span>()</span></div>' +
+        '</div></div>' +
+        '<div class="hero-content">' +
+        '<span class="hero-label">// COMMAND CENTER V4.2.1</span>' +
+        '<h1 class="hero-title">SYNTAX<br>OVERRIDE</h1>' +
+        '<p class="hero-desc">Advanced Lua engineering platform for the Roblox ecosystem. Precision-crafted scripts with stealth execution, bypass modules, and real-time injection protocols.</p>' +
+        '<div class="hero-buttons">' +
+        '<button class="btn-primary" onclick="navigate(\'library\')">BROWSE LIBRARY</button>' +
+        '<button class="btn-secondary" onclick="navigate(\'terminal\')">OPEN TERMINAL</button>' +
+        (currentUser ? '<button class="btn-secondary" onclick="navigate(\'upload\')" style="border-color:var(--neon-cyan);color:var(--neon-cyan);">UPLOAD SCRIPT</button>' : '') +
+        '</div>' +
+        '<div class="vibe-badge"><span class="vibe-emoji">✨</span> VIBE CODED <span class="vibe-emoji">🎵</span></div>' +
+        '<span class="hero-shortcut">PRESS [/] TO OPEN COMMAND PALETTE</span>' +
+        '</div></section>' +
+        '<section class="metrics-section"><div class="metrics-grid">' +
+        '<div class="metric-card"><div class="metric-value">1,402</div><div class="metric-label">Active Scripts</div></div>' +
+        '<div class="metric-card"><div class="metric-value">99.2%</div><div class="metric-label">Bypass Rate</div></div>' +
+        '<div class="metric-card"><div class="metric-value">12ms</div><div class="metric-label">Avg Latency</div></div>' +
+        '<div class="metric-card"><div class="metric-value">0.01%</div><div class="metric-label">Detection Rate</div></div>' +
+        '</div></section>' +
+        '<section class="protocol-section"><h2 class="section-title">// EXECUTION PROTOCOL</h2><div class="protocol-steps">' +
+        '<div class="protocol-step"><span class="step-num">01</span><div><div class="step-title">SELECT</div><div class="step-desc">Browse the script library and select your target module.</div></div></div>' +
+        '<div class="protocol-step"><span class="step-num">02</span><div><div class="step-title">CONFIGURE</div><div class="step-desc">Review the code, check version compatibility, and configure parameters.</div></div></div>' +
+        '<div class="protocol-step"><span class="step-num">03</span><div><div class="step-title">DEPLOY</div><div class="step-desc">Copy the script to your executor and deploy.</div></div></div>' +
+        '</div></section>' + makeFooter();
 }
 
 // ========================================
-// LIBRARY PAGE
+// LIBRARY
 // ========================================
 function renderLibrary() {
-    const libraryScripts = SCRIPTS.filter(s => s.category === 'library');
-    const filtered = filterScripts(libraryScripts);
-    
-    return `
-        <div class="page-container">
-            <div class="page-header">
-                <h1 class="page-title">SCRIPT REPOSITORY</h1>
-                <span class="page-count">${filtered.length} scripts indexed</span>
-            </div>
-            
-            <input type="text" class="search-bar" placeholder="SEARCH SCRIPTS, GAMES..." 
-                   oninput="searchQuery = this.value; navigate('library')" value="${searchQuery}">
-            
-            <div class="filter-bar">
-                <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="currentFilter='all'; navigate('library')">ALL</button>
-                <button class="filter-btn ${currentFilter === 'keyless' ? 'active' : ''}" onclick="currentFilter='keyless'; navigate('library')">KEYLESS</button>
-                <button class="filter-btn ${currentFilter === 'key' ? 'active' : ''}" onclick="currentFilter='key'; navigate('library')">KEY</button>
-                <button class="filter-btn ${currentFilter === 'universal' ? 'active' : ''}" onclick="currentFilter='universal'; navigate('library')">UNIVERSAL</button>
-            </div>
-            
-            <div class="scripts-grid">
-                ${filtered.map(script => renderScriptCard(script)).join('')}
-            </div>
-            
-            <div class="footer">
-                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
-                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
-            </div>
-        </div>
-    `;
+    var allScripts = getAllScripts().filter(function(s) { return s.category === 'library'; });
+    var filtered = filterScripts(allScripts);
+    var html = '<div class="page-container"><div class="page-header"><h1 class="page-title">SCRIPT REPOSITORY</h1><span class="page-count">' + filtered.length + ' scripts indexed</span></div>' +
+        '<input type="text" class="search-bar" placeholder="SEARCH SCRIPTS, GAMES..." oninput="searchQuery=this.value; loadFirestoreScripts().then(function(){document.getElementById(\'app\').innerHTML=renderLibrary();})" value="' + escapeHtml(searchQuery) + '">' +
+        '<div class="filter-bar">' +
+        '<button class="filter-btn ' + (currentFilter === 'all' ? 'active' : '') + '" onclick="currentFilter=\'all\'; loadFirestoreScripts().then(function(){document.getElementById(\'app\').innerHTML=renderLibrary();})">ALL</button>' +
+        '<button class="filter-btn ' + (currentFilter === 'keyless' ? 'active' : '') + '" onclick="currentFilter=\'keyless\'; loadFirestoreScripts().then(function(){document.getElementById(\'app\').innerHTML=renderLibrary();})">KEYLESS</button>' +
+        '<button class="filter-btn ' + (currentFilter === 'key' ? 'active' : '') + '" onclick="currentFilter=\'key\'; loadFirestoreScripts().then(function(){document.getElementById(\'app\').innerHTML=renderLibrary();})">KEY</button>' +
+        '<button class="filter-btn ' + (currentFilter === 'universal' ? 'active' : '') + '" onclick="currentFilter=\'universal\'; loadFirestoreScripts().then(function(){document.getElementById(\'app\').innerHTML=renderLibrary();})">UNIVERSAL</button>' +
+        '</div><div class="scripts-grid">';
+    filtered.forEach(function(s) { html += renderScriptCard(s); });
+    html += '</div>' + makeFooter() + '</div>';
+    return html;
 }
 
 function filterScripts(scripts) {
-    let result = scripts;
-    
+    var result = scripts;
     if (currentFilter !== 'all') {
-        if (currentFilter === 'universal') {
-            result = result.filter(s => s.game === 'Universal');
-        } else {
-            result = result.filter(s => s.keyType === currentFilter);
-        }
+        if (currentFilter === 'universal') result = result.filter(function(s) { return s.game === 'Universal'; });
+        else result = result.filter(function(s) { return s.keyType === currentFilter; });
     }
-    
     if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        result = result.filter(s => 
-            s.title.toLowerCase().includes(q) || 
-            s.game.toLowerCase().includes(q) || 
-            s.description.toLowerCase().includes(q)
-        );
+        var q = searchQuery.toLowerCase();
+        result = result.filter(function(s) { return s.title.toLowerCase().includes(q) || s.game.toLowerCase().includes(q) || s.description.toLowerCase().includes(q); });
     }
-    
     return result;
 }
 
-function renderScriptCard(script) {
-    const statusClass = script.status === 'active' ? 'status-active' : script.status === 'testing' ? 'status-testing' : 'status-patched';
-    const riskClass = script.riskLevel === 'low' ? 'risk-low' : script.riskLevel === 'medium' ? 'risk-medium' : 'risk-high';
-    const keyClass = script.keyType === 'keyless' ? 'badge-keyless' : 'badge-key';
-    
-    return `
-        <div class="script-card">
-            <div class="script-card-header">
-                <span class="script-status ${statusClass}">${script.status.toUpperCase()}</span>
-                <span class="script-game-tag">${script.game}</span>
-            </div>
-            <div class="script-card-body">
-                <div class="script-title">${script.title}</div>
-                <div class="script-desc">${script.description}</div>
-                <div class="script-meta">
-                    <span class="meta-badge ${keyClass}">${script.keyType.toUpperCase()}</span>
-                    <span class="meta-badge ${riskClass}">${script.riskLevel.toUpperCase()}_RISK</span>
-                    <span class="meta-badge" style="color: var(--text-muted); background: rgba(255,255,255,0.05);">👁 ${script.views}</span>
-                </div>
-            </div>
-            <div class="script-card-footer">
-                <span class="script-version">v${script.version}</span>
-                <button class="view-code-btn" onclick="navigate('script-detail', ${script.id})">VIEW CODE</button>
-            </div>
-        </div>
-    `;
+function renderScriptCard(s) {
+    var statusClass = s.status === 'active' ? 'status-active' : s.status === 'testing' ? 'status-testing' : 'status-patched';
+    var riskClass = s.riskLevel === 'low' ? 'risk-low' : s.riskLevel === 'medium' ? 'risk-medium' : 'risk-high';
+    var keyClass = s.keyType === 'keyless' ? 'badge-keyless' : 'badge-key';
+    return '<div class="script-card"><div class="script-card-header"><span class="script-status ' + statusClass + '">' + s.status.toUpperCase() + '</span><span class="script-game-tag">' + escapeHtml(s.game) + '</span></div>' +
+        '<div class="script-card-body"><div class="script-title">' + escapeHtml(s.title) + '</div><div class="script-desc">' + escapeHtml(s.description) + '</div>' +
+        '<div class="script-meta"><span class="meta-badge ' + keyClass + '">' + s.keyType.toUpperCase() + '</span><span class="meta-badge ' + riskClass + '">' + s.riskLevel.toUpperCase() + '_RISK</span>' +
+        '<span class="meta-badge" style="color:var(--text-muted);background:rgba(255,255,255,0.05);">👁 ' + (s.views || 0) + '</span></div></div>' +
+        '<div class="script-card-footer"><span class="script-version">v' + s.version + '</span>' +
+        '<button class="view-code-btn" onclick="incrementViews(\'' + s.id + '\'); navigate(\'script-detail\',\'' + s.id + '\')">VIEW CODE</button></div></div>';
 }
 
 // ========================================
-// SCRIPT DETAIL PAGE
+// SCRIPT DETAIL
 // ========================================
 function renderScriptDetail(scriptId) {
-    const script = SCRIPTS.find(s => s.id === scriptId);
+    var all = getAllScripts();
+    var script = all.find(function(s) { return s.id === scriptId; });
     if (!script) return '<div class="page-container"><p>Script not found.</p></div>';
-    
-    const riskClass = script.riskLevel === 'low' ? 'risk-low' : script.riskLevel === 'medium' ? 'risk-medium' : 'risk-high';
-    const keyClass = script.keyType === 'keyless' ? 'badge-keyless' : 'badge-key';
-    
-    return `
-        <div class="script-detail">
-            <button class="back-btn" onclick="navigate('${script.category === 'terminal' ? 'terminal' : 'library'}')">← BACK</button>
-            
-            <h1 class="page-title">${script.title}</h1>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem; line-height: 1.6;">${script.description}</p>
-            
-            <div class="detail-meta-grid">
-                <div class="detail-meta-item">
-                    <div class="detail-meta-label">Game</div>
-                    <div class="detail-meta-value">${script.game}</div>
-                </div>
-                <div class="detail-meta-item">
-                    <div class="detail-meta-label">Key Type</div>
-                    <div class="detail-meta-value">${script.keyType.toUpperCase()}</div>
-                </div>
-                <div class="detail-meta-item">
-                    <div class="detail-meta-label">Version</div>
-                    <div class="detail-meta-value">v${script.version}</div>
-                </div>
-                <div class="detail-meta-item">
-                    <div class="detail-meta-label">Risk Level</div>
-                    <div class="detail-meta-value">${script.riskLevel.toUpperCase()}</div>
-                </div>
-                <div class="detail-meta-item">
-                    <div class="detail-meta-label">Status</div>
-                    <div class="detail-meta-value">${script.status.toUpperCase()}</div>
-                </div>
-                <div class="detail-meta-item">
-                    <div class="detail-meta-label">Views</div>
-                    <div class="detail-meta-value">${script.views}</div>
-                </div>
-            </div>
-            
-            <div class="detail-code-block">
-                <div class="detail-code-header">
-                    <span style="font-size: 0.7rem; color: var(--text-muted);">${script.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}.lua</span>
-                    <button class="copy-btn" onclick="copyCode(this, ${script.id})">COPY CODE</button>
-                </div>
-                <pre class="detail-code-content">${escapeHtml(script.code)}</pre>
-            </div>
-            
-            <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 1rem;">Created by +1 aura &middot; Syntax Override</p>
-            
-            <div class="footer">
-                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
-                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
-            </div>
-        </div>
-    `;
-}
-
-function copyCode(btn, scriptId) {
-    const script = SCRIPTS.find(s => s.id === scriptId);
-    if (!script) return;
-    
-    navigator.clipboard.writeText(script.code).then(() => {
-        btn.textContent = 'COPIED!';
-        btn.classList.add('copied');
-        setTimeout(() => {
-            btn.textContent = 'COPY CODE';
-            btn.classList.remove('copied');
-        }, 2000);
-    }).catch(() => {
-        // Fallback for older browsers
-        const textarea = document.createElement('textarea');
-        textarea.value = script.code;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        btn.textContent = 'COPIED!';
-        btn.classList.add('copied');
-        setTimeout(() => {
-            btn.textContent = 'COPY CODE';
-            btn.classList.remove('copied');
-        }, 2000);
-    });
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    var riskClass = script.riskLevel === 'low' ? 'risk-low' : script.riskLevel === 'medium' ? 'risk-medium' : 'risk-high';
+    return '<div class="script-detail">' +
+        '<button class="back-btn" onclick="navigate(\'' + (script.category === 'terminal' ? 'terminal' : 'library') + '\')">← BACK</button>' +
+        '<h1 class="page-title">' + escapeHtml(script.title) + '</h1>' +
+        '<p style="color:var(--text-secondary);font-size:0.85rem;margin-top:0.5rem;line-height:1.6;">' + escapeHtml(script.description) + '</p>' +
+        '<div class="detail-meta-grid">' +
+        '<div class="detail-meta-item"><div class="detail-meta-label">Game</div><div class="detail-meta-value">' + escapeHtml(script.game) + '</div></div>' +
+        '<div class="detail-meta-item"><div class="detail-meta-label">Key Type</div><div class="detail-meta-value">' + script.keyType.toUpperCase() + '</div></div>' +
+        '<div class="detail-meta-item"><div class="detail-meta-label">Version</div><div class="detail-meta-value">v' + script.version + '</div></div>' +
+        '<div class="detail-meta-item"><div class="detail-meta-label">Risk Level</div><div class="detail-meta-value">' + script.riskLevel.toUpperCase() + '</div></div>' +
+        '<div class="detail-meta-item"><div class="detail-meta-label">Status</div><div class="detail-meta-value">' + script.status.toUpperCase() + '</div></div>' +
+        '<div class="detail-meta-item"><div class="detail-meta-label">Views</div><div class="detail-meta-value">' + (script.views || 0) + '</div></div>' +
+        '</div>' +
+        '<div class="detail-code-block"><div class="detail-code-header"><span style="font-size:0.7rem;color:var(--text-muted);">script.lua</span>' +
+        '<button class="copy-btn" onclick="copyCode(this,\'' + script.id + '\')">COPY CODE</button></div>' +
+        '<pre class="detail-code-content">' + escapeHtml(script.code) + '</pre></div>' +
+        '<p style="font-size:0.7rem;color:var(--text-muted);margin-top:1rem;">Created by ' + escapeHtml(script.submittedBy || '+1 aura') + ' &middot; Syntax Override</p>' +
+        makeFooter() + '</div>';
 }
 
 // ========================================
-// TERMINAL PAGE
+// TERMINAL
 // ========================================
 function renderTerminal() {
-    const terminalScripts = SCRIPTS.filter(s => s.category === 'terminal');
-    
-    return `
-        <div class="page-container">
-            <div class="page-header">
-                <h1 class="page-title">TERMINAL</h1>
-            </div>
-            
-            <div class="terminal-input-bar">
-                <input type="text" class="terminal-input" placeholder="Enter Lua command..." id="terminalInput" 
-                       onkeydown="if(event.key==='Enter') runTerminalCmd()">
-                <button class="terminal-enter-btn" onclick="runTerminalCmd()">[ENTER]</button>
-            </div>
-            
-            <div id="terminalOutput"></div>
-            
-            <input type="text" class="search-bar" placeholder="SEARCH TERMINAL SCRIPTS, GAMES..." 
-                   oninput="filterTerminal(this.value)" style="margin-top: 1.5rem;">
-            
-            <div class="terminal-file-header">TERMINAL_SCRIPTS.LUA</div>
-            <div class="terminal-list" id="terminalList">
-                ${terminalScripts.map((script, i) => {
-                    const statusColor = script.status === 'active' ? 'var(--neon-green)' : script.status === 'testing' ? 'var(--neon-yellow)' : 'var(--neon-red)';
-                    return `
-                        <div class="terminal-item" onclick="navigate('script-detail', ${script.id})" data-title="${script.title.toLowerCase()}" data-game="${script.game.toLowerCase()}">
-                            <span class="terminal-line-num">${String(i + 1).padStart(2, '0')}</span>
-                            <span class="terminal-item-title">${script.title}</span>
-                            <div class="terminal-item-meta">
-                                <span class="terminal-tag" style="background: rgba(0,229,255,0.1); color: var(--neon-cyan);">${script.game}</span>
-                                <span class="terminal-tag" style="background: rgba(0,0,0,0.3); color: var(--text-muted);">${Math.floor(Math.random() * 15 + 3)}ms</span>
-                                <span class="terminal-tag badge-keyless">${script.keyType.toUpperCase()}</span>
-                                <span style="width: 8px; height: 8px; border-radius: 50%; background: ${statusColor}; flex-shrink: 0;"></span>
-                            </div>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-            
-            <div class="terminal-legend">
-                <div class="legend-item"><span class="legend-dot working"></span> Working / Active</div>
-                <div class="legend-item"><span class="legend-dot patched"></span> Patched / Not Working</div>
-                <div class="legend-item"><span class="legend-dot testing"></span> Testing</div>
-            </div>
-            
-            <div class="footer">
-                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
-                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
-            </div>
-        </div>
-    `;
+    var termScripts = getAllScripts().filter(function(s) { return s.category === 'terminal'; });
+    var html = '<div class="page-container"><div class="page-header"><h1 class="page-title">TERMINAL</h1></div>' +
+        '<div class="terminal-input-bar"><input type="text" class="terminal-input" placeholder="Enter Lua command..." id="terminalInput" onkeydown="if(event.key===\'Enter\')runTerminalCmd()"><button class="terminal-enter-btn" onclick="runTerminalCmd()">[ENTER]</button></div>' +
+        '<div id="terminalOutput"></div>' +
+        '<input type="text" class="search-bar" placeholder="SEARCH TERMINAL SCRIPTS..." oninput="filterTerminal(this.value)" style="margin-top:1.5rem;">' +
+        '<div class="terminal-file-header">TERMINAL_SCRIPTS.LUA</div><div class="terminal-list" id="terminalList">';
+    termScripts.forEach(function(s, i) {
+        var statusColor = s.status === 'active' ? 'var(--neon-green)' : s.status === 'testing' ? 'var(--neon-yellow)' : 'var(--neon-red)';
+        var latency = Math.floor(Math.random() * 15 + 3);
+        html += '<div class="terminal-item" onclick="navigate(\'script-detail\',\'' + s.id + '\')" data-title="' + s.title.toLowerCase() + '" data-game="' + s.game.toLowerCase() + '">' +
+            '<span class="terminal-line-num">' + String(i + 1).padStart(2, '0') + '</span>' +
+            '<span class="terminal-item-title">' + escapeHtml(s.title) + '</span>' +
+            '<div class="terminal-item-meta"><span class="terminal-tag" style="background:rgba(0,229,255,0.1);color:var(--neon-cyan);">' + escapeHtml(s.game) + '</span>' +
+            '<span class="terminal-tag" style="background:rgba(0,0,0,0.3);color:var(--text-muted);">' + latency + 'ms</span>' +
+            '<span class="terminal-tag badge-keyless">' + s.keyType.toUpperCase() + '</span>' +
+            '<span style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></span></div></div>';
+    });
+    html += '</div><div class="terminal-legend">' +
+        '<div class="legend-item"><span class="legend-dot working"></span> Working / Active</div>' +
+        '<div class="legend-item"><span class="legend-dot patched"></span> Patched / Not Working</div>' +
+        '<div class="legend-item"><span class="legend-dot testing"></span> Testing</div>' +
+        '</div>' + makeFooter() + '</div>';
+    return html;
 }
 
 function runTerminalCmd() {
-    const input = document.getElementById('terminalInput');
-    const output = document.getElementById('terminalOutput');
-    const cmd = input.value.trim();
-    
+    var input = document.getElementById('terminalInput');
+    var output = document.getElementById('terminalOutput');
+    var cmd = input.value.trim();
     if (!cmd) return;
-    
-    let result = '';
-    
+    var result = '';
     if (cmd.toLowerCase().includes('print')) {
-        const match = cmd.match(/print\s*\(\s*["'](.+?)["']\s*\)/);
+        var match = cmd.match(/print\s*\(\s*["'](.+?)["']\s*\)/);
         result = match ? match[1] : 'nil';
     } else if (cmd.toLowerCase() === 'help') {
-        result = 'Available commands: print("text"), help, clear, version, scripts';
-    } else if (cmd.toLowerCase() === 'clear') {
-        output.innerHTML = '';
-        input.value = '';
-        return;
-    } else if (cmd.toLowerCase() === 'version') {
-        result = 'Syntax Override Terminal v4.2.1';
-    } else if (cmd.toLowerCase() === 'scripts') {
-        result = SCRIPTS.filter(s => s.category === 'terminal').map(s => s.title).join('\\n');
-    } else {
-        result = `[ERROR] Unknown command: ${cmd}`;
-    }
-    
-    output.innerHTML += `
-        <div style="padding: 0.5rem 1rem; font-size: 0.8rem; border-bottom: 1px solid var(--border);">
-            <div style="color: var(--neon-green);">> ${escapeHtml(cmd)}</div>
-            <div style="color: var(--text-secondary); margin-top: 0.25rem; white-space: pre-wrap;">${escapeHtml(result)}</div>
-        </div>
-    `;
-    
+        result = 'Commands: print("text"), help, clear, version, scripts';
+    } else if (cmd.toLowerCase() === 'clear') { output.innerHTML = ''; input.value = ''; return;
+    } else if (cmd.toLowerCase() === 'version') { result = 'Syntax Override Terminal v4.2.1';
+    } else if (cmd.toLowerCase() === 'scripts') { result = getAllScripts().filter(function(s) { return s.category === 'terminal'; }).map(function(s) { return s.title; }).join('\n');
+    } else { result = '[ERROR] Unknown command: ' + cmd; }
+    output.innerHTML += '<div style="padding:0.5rem 1rem;font-size:0.8rem;border-bottom:1px solid var(--border);"><div style="color:var(--neon-green);">> ' + escapeHtml(cmd) + '</div><div style="color:var(--text-secondary);margin-top:0.25rem;white-space:pre-wrap;">' + escapeHtml(result) + '</div></div>';
     input.value = '';
-    output.scrollTop = output.scrollHeight;
 }
 
-function filterTerminal(query) {
-    const items = document.querySelectorAll('.terminal-item');
-    const q = query.toLowerCase();
-    items.forEach(item => {
-        const title = item.dataset.title;
-        const game = item.dataset.game;
-        item.style.display = (title.includes(q) || game.includes(q)) ? 'flex' : 'none';
+function filterTerminal(q) {
+    var items = document.querySelectorAll('.terminal-item');
+    var query = q.toLowerCase();
+    items.forEach(function(item) {
+        var title = item.getAttribute('data-title');
+        var game = item.getAttribute('data-game');
+        item.style.display = (title.includes(query) || game.includes(query)) ? 'flex' : 'none';
     });
 }
 
 // ========================================
-// CHANGELOG PAGE
+// CHANGELOG
 // ========================================
 function renderChangelog() {
-    return `
-        <div class="page-container">
-            <div class="page-header">
-                <h1 class="page-title">SYSTEM CHANGELOG</h1>
-            </div>
-            
-            <div class="changelog-timeline">
-                ${CHANGELOG.map(entry => `
-                    <div class="changelog-entry">
-                        <div class="changelog-date">${entry.date}</div>
-                        <span class="changelog-type">${entry.type.toUpperCase()}</span>
-                        <div class="changelog-title">${entry.title}</div>
-                        <div class="changelog-desc">${entry.description}</div>
-                    </div>
-                `).join('')}
-            </div>
-            
-            <div class="footer">
-                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
-                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
-            </div>
-        </div>
-    `;
+    var html = '<div class="page-container"><div class="page-header"><h1 class="page-title">SYSTEM CHANGELOG</h1></div><div class="changelog-timeline">';
+    CHANGELOG.forEach(function(e) {
+        html += '<div class="changelog-entry"><div class="changelog-date">' + e.date + '</div><span class="changelog-type">' + e.type.toUpperCase() + '</span><div class="changelog-title">' + e.title + '</div><div class="changelog-desc">' + e.description + '</div></div>';
+    });
+    html += '</div>' + makeFooter() + '</div>';
+    return html;
 }
 
 // ========================================
-// RULES PAGE
+// RULES
 // ========================================
 function renderRules() {
-    return `
-        <div class="page-container">
-            <div class="page-header">
-                <h1 class="page-title">COMMUNITY RULES</h1>
-            </div>
-            
-            <div class="rules-list">
-                ${RULES.map(rule => `
-                    <div class="rule-item rule-severity-${rule.severity}">
-                        <div class="rule-header" onclick="this.parentElement.classList.toggle('open')">
-                            <div class="rule-num-title">
-                                <span class="rule-num">${rule.num}</span>
-                                <span class="rule-title">${rule.title}</span>
-                            </div>
-                            <span class="rule-arrow">▼</span>
-                        </div>
-                        <div class="rule-content">${rule.content}</div>
-                    </div>
-                `).join('')}
-            </div>
-            
-            <div class="footer">
-                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
-                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
-            </div>
-        </div>
-    `;
+    var html = '<div class="page-container"><div class="page-header"><h1 class="page-title">COMMUNITY RULES</h1></div><div class="rules-list">';
+    RULES.forEach(function(r) {
+        html += '<div class="rule-item rule-severity-' + r.severity + '"><div class="rule-header" onclick="this.parentElement.classList.toggle(\'open\')"><div class="rule-num-title"><span class="rule-num">' + r.num + '</span><span class="rule-title">' + r.title + '</span></div><span class="rule-arrow">▼</span></div><div class="rule-content">' + r.content + '</div></div>';
+    });
+    html += '</div>' + makeFooter() + '</div>';
+    return html;
 }
 
 // ========================================
-// ABOUT PAGE
+// ABOUT
 // ========================================
 function renderAbout() {
-    return `
-        <div class="page-container">
-            <div class="page-header">
-                <h1 class="page-title">ABOUT SYNTAX OVERRIDE</h1>
-            </div>
-            
-            <div class="about-section">
-                <p class="about-intro">Syntax Override is an advanced Lua engineering platform built for the Roblox ecosystem. We provide precision-crafted scripts, a real-time terminal, and a community-driven library of tools for developers and power users.</p>
-            </div>
-            
-            <div class="about-section">
-                <h2 class="about-subtitle">// MISSION</h2>
-                <p class="about-mission">To build the most reliable, transparent, and community-driven script platform in the Roblox ecosystem. Every script is reviewed, every tool is tested, and every user is respected.</p>
-            </div>
-            
-            <div class="about-section">
-                <h2 class="about-subtitle">// PLATFORM FEATURES</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">📚</div>
-                        <div class="feature-title">Script Library</div>
-                        <div class="feature-desc">Curated collection of tested scripts with risk levels, key types, and real-time status tracking.</div>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">💻</div>
-                        <div class="feature-title">Live Terminal</div>
-                        <div class="feature-desc">Interactive terminal for quick script testing and command execution.</div>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <div class="feature-title">Status Tracking</div>
-                        <div class="feature-desc">Real-time monitoring of script status, latency, and detection rates.</div>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">⚡</div>
-                        <div class="feature-title">Fast Injection</div>
-                        <div class="feature-desc">Optimized script delivery with minimal latency and maximum bypass rates.</div>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">👥</div>
-                        <div class="feature-title">Community</div>
-                        <div class="feature-desc">Growing community of scripters, developers, and creators on Discord.</div>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📤</div>
-                        <div class="feature-title">Script Upload</div>
-                        <div class="feature-desc">Submit your own scripts for review and share them with the community.</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="about-section">
-                <h2 class="about-subtitle">// THE TEAM</h2>
-                <div class="team-card">
-                    <div class="team-avatar">+1</div>
-                    <div>
-                        <div class="team-name">+1 AURA</div>
-                        <div class="team-role">Founder & Lead Developer</div>
-                        <div class="team-desc">Builder of Syntax Override. Architect of the platform, design system, and script library.</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="about-section">
-                <h2 class="about-subtitle">// JOIN THE COMMUNITY</h2>
-                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">Connect with scripters, share your work, and stay updated on new releases.</p>
-                <a href="https://discord.gg/MxtngkPNzy" target="_blank" class="discord-cta">
-                    💬 JOIN DISCORD
-                </a>
-            </div>
-            
-            <div class="footer">
-                &copy; 2026 Syntax Override &middot; Built by +1 aura &middot; 
-                <a href="https://discord.gg/MxtngkPNzy" target="_blank">Discord</a>
-            </div>
-        </div>
-    `;
+    return '<div class="page-container"><div class="page-header"><h1 class="page-title">ABOUT SYNTAX OVERRIDE</h1></div>' +
+        '<div class="about-section"><p class="about-intro">Syntax Override is an advanced Lua engineering platform built for the Roblox ecosystem. We provide precision-crafted scripts, a real-time terminal, and a community-driven library.</p></div>' +
+        '<div class="about-section"><h2 class="about-subtitle">// MISSION</h2><p class="about-mission">To build the most reliable, transparent, and community-driven script platform in the Roblox ecosystem.</p></div>' +
+        '<div class="about-section"><h2 class="about-subtitle">// PLATFORM FEATURES</h2><div class="features-grid">' +
+        '<div class="feature-card"><div class="feature-icon">📚</div><div class="feature-title">Script Library</div><div class="feature-desc">Curated scripts with risk levels, key types, and status tracking.</div></div>' +
+        '<div class="feature-card"><div class="feature-icon">💻</div><div class="feature-title">Live Terminal</div><div class="feature-desc">Interactive terminal for quick script testing.</div></div>' +
+        '<div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Status Tracking</div><div class="feature-desc">Real-time monitoring of script status and latency.</div></div>' +
+        '<div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Fast Injection</div><div class="feature-desc">Optimized delivery with maximum bypass rates.</div></div>' +
+        '<div class="feature-card"><div class="feature-icon">👥</div><div class="feature-title">Community</div><div class="feature-desc">Growing community of scripters on Discord.</div></div>' +
+        '<div class="feature-card"><div class="feature-icon">📤</div><div class="feature-title">Script Upload</div><div class="feature-desc">Submit your own scripts powered by Firebase.</div></div>' +
+        '</div></div>' +
+        '<div class="about-section"><h2 class="about-subtitle">// THE TEAM</h2><div class="team-card"><div class="team-avatar">+1</div><div><div class="team-name">+1 AURA</div><div class="team-role">Founder & Lead Developer</div><div class="team-desc">Builder of Syntax Override.</div><div style="margin-top:0.75rem;"><span class="vibe-badge"><span class="vibe-emoji">✨</span> VIBE CODED <span class="vibe-emoji">🎵</span></span></div></div></div></div>' +
+        '<div class="about-section"><h2 class="about-subtitle">// JOIN THE COMMUNITY</h2><p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1rem;">Connect with scripters, share your work, and stay updated.</p><a href="https://discord.gg/MxtngkPNzy" target="_blank" class="discord-cta">💬 JOIN DISCORD</a></div>' +
+        makeFooter() + '</div>';
+}
+
+// ========================================
+// UPLOAD PAGE
+// ========================================
+function renderUpload() {
+    if (!currentUser) {
+        return '<div class="page-container"><div class="login-prompt"><h1 class="page-title">UPLOAD SCRIPT</h1><p>You must be logged in to upload scripts.</p><button class="btn-primary" onclick="loginWithGoogle()">LOGIN WITH GOOGLE</button></div></div>';
+    }
+    return '<div class="page-container"><div class="page-header"><h1 class="page-title">UPLOAD SCRIPT</h1></div>' +
+        '<div class="upload-form">' +
+        '<div class="form-group"><label class="form-label">Script Name</label><input type="text" class="form-input" id="uploadTitle" placeholder="e.g. My Auto Farm Script"></div>' +
+        '<div class="form-group"><label class="form-label">Game</label><input type="text" class="form-input" id="uploadGame" placeholder="e.g. Blox Fruits, Universal"></div>' +
+        '<div class="form-group"><label class="form-label">Description</label><input type="text" class="form-input" id="uploadDesc" placeholder="Short description of what the script does"></div>' +
+        '<div class="form-group"><label class="form-label">Lua Code</label><textarea class="form-textarea" id="uploadCode" placeholder="-- Paste your Lua code here..."></textarea></div>' +
+        '<div class="form-group"><label class="form-label">Key Type</label><select class="form-select" id="uploadKeyType"><option value="keyless">KEYLESS</option><option value="key">KEY</option></select></div>' +
+        '<div class="form-group"><label class="form-label">Risk Level</label><select class="form-select" id="uploadRisk"><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select></div>' +
+        '<div class="form-group"><label class="form-label">Category</label><select class="form-select" id="uploadCategory"><option value="library">Library</option><option value="terminal">Terminal</option></select></div>' +
+        '<p class="form-hint" style="margin-bottom:1rem;">Scripts are reviewed by admins before appearing in the library.</p>' +
+        '<button class="submit-btn" id="submitBtn" onclick="handleSubmit()">SUBMIT FOR REVIEW</button>' +
+        '</div>' + makeFooter() + '</div>';
+}
+
+function handleSubmit() {
+    var title = document.getElementById('uploadTitle').value.trim();
+    var game = document.getElementById('uploadGame').value.trim();
+    var desc = document.getElementById('uploadDesc').value.trim();
+    var code = document.getElementById('uploadCode').value.trim();
+    var keyType = document.getElementById('uploadKeyType').value;
+    var risk = document.getElementById('uploadRisk').value;
+    var category = document.getElementById('uploadCategory').value;
+    if (!title || !game || !desc || !code) { showToast('Please fill in all fields', true); return; }
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'SUBMITTING...';
+    submitScript({ title: title, game: game, description: desc, code: code, keyType: keyType, riskLevel: risk, category: category }).catch(function() {
+        btn.disabled = false;
+        btn.textContent = 'SUBMIT FOR REVIEW';
+    });
+}
+
+// ========================================
+// ADMIN PAGE
+// ========================================
+function renderAdmin() {
+    if (!isAdmin) {
+        return '<div class="page-container"><div class="login-prompt"><h1 class="page-title">ACCESS DENIED</h1><p>Admin access only.</p><button class="btn-primary" onclick="navigate(\'home\')">GO HOME</button></div></div>';
+    }
+    return '<div class="page-container"><div class="page-header"><h1 class="page-title">🛡️ ADMIN DASHBOARD</h1></div>' +
+        '<div class="admin-stats" id="adminStats"><div class="admin-stat"><div class="admin-stat-value"><span class="loading-spinner"></span></div><div class="admin-stat-label">Loading...</div></div></div>' +
+        '<h2 class="section-title" style="margin-top:2rem;">// PENDING SCRIPTS</h2>' +
+        '<div id="pendingList"><div style="text-align:center;padding:2rem;"><span class="loading-spinner"></span> Loading...</div></div>' +
+        makeFooter() + '</div>';
+}
+
+function loadAdminData() {
+    if (!isAdmin) return;
+    var totalScripts = SCRIPTS.length + firestoreScripts.length;
+    db.collection('pending').orderBy('createdAt', 'desc').get().then(function(snap) {
+        var pendingCount = snap.size;
+        db.collection('users').get().then(function(userSnap) {
+            var userCount = userSnap.size;
+            var statsEl = document.getElementById('adminStats');
+            if (statsEl) {
+                statsEl.innerHTML = '<div class="admin-stat"><div class="admin-stat-value">' + userCount + '</div><div class="admin-stat-label">Total Users</div></div>' +
+                    '<div class="admin-stat"><div class="admin-stat-value">' + totalScripts + '</div><div class="admin-stat-label">Approved Scripts</div></div>' +
+                    '<div class="admin-stat"><div class="admin-stat-value">' + pendingCount + '</div><div class="admin-stat-label">Pending Review</div></div>';
+            }
+        });
+        var pendingEl = document.getElementById('pendingList');
+        if (!pendingEl) return;
+        if (snap.empty) { pendingEl.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No pending scripts.</p>'; return; }
+        var html = '';
+        snap.forEach(function(doc) {
+            var d = doc.data();
+            html += '<div class="pending-card"><div class="pending-card-header"><div><div class="pending-title">' + escapeHtml(d.title || 'Untitled') + '</div>' +
+                '<div class="pending-by">Submitted by ' + escapeHtml(d.submittedBy || 'Unknown') + ' &middot; ' + escapeHtml(d.game || 'Unknown') + ' &middot; ' + (d.keyType || 'keyless').toUpperCase() + ' &middot; ' + (d.riskLevel || 'low').toUpperCase() + '_RISK</div></div></div>' +
+                '<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.5rem;">' + escapeHtml(d.description || '') + '</div>' +
+                '<div class="pending-code">' + escapeHtml(d.code || '-- No code') + '</div>' +
+                '<div class="pending-actions"><button class="approve-btn" onclick="approveScript(\'' + doc.id + '\')">✅ APPROVE</button>' +
+                '<button class="reject-btn" onclick="rejectScript(\'' + doc.id + '\')">❌ REJECT</button></div></div>';
+        });
+        pendingEl.innerHTML = html;
+    });
+}
+
+// ========================================
+// PROFILE PAGE
+// ========================================
+function renderProfile() {
+    if (!currentUser) {
+        return '<div class="page-container"><div class="login-prompt"><h1 class="page-title">PROFILE</h1><p>You must be logged in to view your profile.</p><button class="btn-primary" onclick="loginWithGoogle()">LOGIN WITH GOOGLE</button></div></div>';
+    }
+    var initial = (currentUser.displayName || currentUser.email || '?')[0].toUpperCase();
+    var avatarHtml = currentUser.photoURL
+        ? '<img src="' + currentUser.photoURL + '" class="profile-avatar-lg">'
+        : '<div class="profile-avatar-lg">' + initial + '</div>';
+    return '<div class="page-container"><div class="page-header"><h1 class="page-title">PROFILE</h1></div>' +
+        '<div class="profile-header">' + avatarHtml + '<div><div class="profile-name">' + escapeHtml(currentUser.displayName || 'User') + '</div>' +
+        '<div class="profile-email">' + escapeHtml(currentUser.email || '') + '</div>' +
+        '<div class="profile-joined">Member since ' + new Date(parseInt(currentUser.metadata.createdAt)).toLocaleDateString() + '</div>' +
+        (isAdmin ? '<div style="margin-top:0.5rem;"><span class="meta-badge" style="background:rgba(255,0,64,0.15);color:var(--neon-red);border:1px solid rgba(255,0,64,0.3);">ADMIN</span></div>' : '') +
+        '</div></div>' +
+        '<div class="profile-stats" id="profileStats"><div class="admin-stat"><div class="admin-stat-value"><span class="loading-spinner"></span></div><div class="admin-stat-label">Loading...</div></div></div>' +
+        '<h2 class="section-title">// YOUR SUBMISSIONS</h2><div id="userScripts"><span class="loading-spinner"></span> Loading...</div>' +
+        makeFooter() + '</div>';
+}
+
+function loadProfileData() {
+    if (!currentUser) return;
+    db.collection('scripts').where('submittedBy', '==', currentUser.displayName || currentUser.email).get().then(function(snap) {
+        var statsEl = document.getElementById('profileStats');
+        var scriptsEl = document.getElementById('userScripts');
+        if (statsEl) {
+            statsEl.innerHTML = '<div class="admin-stat"><div class="admin-stat-value">' + snap.size + '</div><div class="admin-stat-label">Approved Scripts</div></div>' +
+                '<div class="admin-stat"><div class="admin-stat-value">0</div><div class="admin-stat-label">Total Views</div></div>' +
+                '<div class="admin-stat"><div class="admin-stat-value">' + (isAdmin ? 'ADMIN' : 'USER') + '</div><div class="admin-stat-label">Role</div></div>';
+        }
+        if (scriptsEl) {
+            if (snap.empty) { scriptsEl.innerHTML = '<p style="color:var(--text-muted);">No approved scripts yet. <a style="color:var(--neon-green);cursor:pointer;" onclick="navigate(\'upload\')">Upload one!</a></p>'; return; }
+            var html = '<div class="scripts-grid">';
+            snap.forEach(function(doc) {
+                var s = doc.data();
+                s.id = 'fb_' + doc.id;
+                html += renderScriptCard(s);
+            });
+            html += '</div>';
+            scriptsEl.innerHTML = html;
+        }
+    });
 }
 
 // ========================================
 // INIT
 // ========================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     initMatrix();
     animateStatusBar();
-    render();
+    loadFirestoreScripts().then(function() { render(); updateAuthUI(); });
 });
 
     </script>
